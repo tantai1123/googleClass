@@ -14,10 +14,12 @@ const classSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-  students: {
-    type: Schema.Types.ObjectId,
-    ref: 'User'
-  },
+  students: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ],
   posts: [
     {
       type: Schema.Types.ObjectId,

@@ -6,11 +6,9 @@ const flash = require("connect-flash");
 
 const users = require('./controllers/api/users');
 const profile = require('./controllers/api/profile');
-const posts = require('./controllers/api/posts');
 const classes = require('./controllers/api/classes');
-const messages = require('./controllers/api/messages');
 const comments = require('./controllers/api/comments');
-const fileupload = require('./controllers/api/fileupload');
+const admin = require('./controllers/api/admin');
 var cors = require('cors')
 require('./config/seedDb');
 const app = express();
@@ -27,13 +25,11 @@ app.use(passport.initialize());
 //passport config
 require('./config/passport')(passport);
 
-app.use('/api/users', users);
-app.use('/api/profile', profile);
-app.use('/api/posts', posts);
-// app.use('/api/classes', classes);
-// app.use('/api/messages', messages);
-// app.use('/api/comments', comments);
-// app.use('/api/fileupload', fileupload);
+app.use('/users', users);
+app.use('/profile', profile);
+app.use('/classes', classes);
+app.use('/comments', comments);
+app.use('/admin', admin);
 
 const port = process.env.PORT || 1234;
 

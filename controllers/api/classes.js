@@ -8,7 +8,6 @@ const User = require('../../models/User');
 const Post = require('../../models/Post');
 const Profile = require('../../models/Profile');
 
-const validateCreateClass = require('../../validation/class');
 const validatePostInput = require('../../validation/post');
 
 const { checkObjectId } = require('../../utils/checkObjectId');

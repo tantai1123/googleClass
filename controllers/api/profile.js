@@ -44,14 +44,6 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
 }
 );
 
-router.get('/handle', passport.authenticate('jwt', { session: false }), (req, res) => {
-  res.json({
-    statusCode: 1,
-    message: 'Lấy thông tin thành công',
-    data: req.user
-  });// Nếu có sẽ trả về thông tin profile
-});
-
 //GET all Profile
 router.get('/all', passport.authenticate('jwt', { session: false }), async (req, res) => {
   if (req.user.isAdmin) {
@@ -121,8 +113,6 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
   profileFields.name = req.user.name;
   if (req.body.fullname) profileFields.fullname = req.body.fullname;
   if (req.body.maso) profileFields.maso = req.body.maso;
-  if (req.body.birthday) profileFields.birthday = req.body.birthday;
-  if (req.body.status) profileFields.status = req.body.status;
 
   profileFields.social = {};
   if (req.body.facebook) profileFields.social.facebook = req.body.facebook;

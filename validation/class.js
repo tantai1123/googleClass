@@ -17,10 +17,10 @@ module.exports = function ValidateCreateClass(data) {
     errors.name = 'Tên không được để trống';
   }
   if (Validator.isEmpty(data.startTime)) {
-    errors.name = 'Thời gian bắt đầu không được để trống';
+    errors.startTime = 'Thời gian bắt đầu không được để trống';
   }
   if (Validator.isEmpty(data.endTime)) {
-    errors.name = 'Thời gian kết thúc không được để trống';
+    errors.endTime = 'Thời gian kết thúc không được để trống';
   }
   //   if(Validator.isEmpty(data.description)){
   //     errors.description ='Thêm mô tả về nhóm';
