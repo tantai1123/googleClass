@@ -208,15 +208,4 @@ router.delete('/education/:edu_id', passport.authenticate('jwt', { session: fals
     }));
 });
 
-//Xóa profile
-router.delete('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  await Profile.findOneAndRemove({ user: req.user.id }).then(() => {
-    res.json({
-      statusCode: 1,
-      message: 'Xóa toàn bộ thông tin tài khoản thành công',
-      data: 0
-    })
-  })
-});
-
 module.exports = router;
