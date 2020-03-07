@@ -48,17 +48,17 @@
 
 - **/admin/class**  `<GET>`
 
-- **/admin/class/:classid/addteacher/:idteacher**  `<POST>`
+- **/admin/class/:classId/addteacher/:idTeacher**  `<POST>`
 >params: id class, id user
 
-- **/admin/class/:classid/addstudent/:idstudent**  `<POST>`
+- **/admin/class/:classId/addstudent/:idStudent**  `<POST>`
 >params: id class, id user
 
-- **/admin/class/:classid/members** `<POST>`
+- **/admin/class/:classId/members** `<POST>`
 >params: id class
 
 4. *Class*  
 - **/classes**  `<GET>`
 
-- **/classes/:id/members**  `<GET>`
+- **/classes/:classId/members**  `<GET>`
 >params: id class
