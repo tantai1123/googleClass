@@ -19,46 +19,46 @@
 
 ## api
 1. User
-- /users/register
+- **/users/register**
 gmail, name, password, passwordCfm, secretCode
 
-- /users/login
+- **/users/login**
 gmail, password
 
-- /users/current
+- **/users/current**
 
 2. Profile
-- /profile
+- **/profile**
 
-- /profile/user/:name
+- **/profile/user/:name**
 
-- /profile
+- **/profile**
 fullname, maso, facebook, zalo, twitter, instagram
 
-- /profile/education
+- **/profile/education**
 school, degree, fieldofstudy, from, to, current, description
 
-- /profile/education/:id (delete 1 education)
+- **/profile/education/:id** (delete 1 education)
 
 3. Admin (admin@gmail.com - admin1234)
-- /admin/class/create
+- **/admin/class/create**
 name, description, startTime, endTime, time
 
-- /admin/user
+- **/admin/user**
 
-- /admin/class
+- **/admin/class**
 
-- /admin/class/:classid/addteacher/:idteacher
+- **/admin/class/:classid/addteacher/:idteacher**
 params: id class, id user
 
-- /admin/class/:classid/addstudent/:idstudent
+- **/admin/class/:classid/addstudent/:idstudent**
 *params: id class, id user
 
-- /admin/class/:classid/members
+- **/admin/class/:classid/members**
 params: id class
 
 4. Class
-- /classes
+- **/classes**
 
-- /classes/:id/members
+- **/classes/:id/members**
 params: id class
