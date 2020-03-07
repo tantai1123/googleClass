@@ -57,8 +57,8 @@
 - **/admin/class/:classid/members** ~~POST~~
 >params: id class
 
-4. Class  ~~GET~~
-- **/classes**
+4. Class  
+- **/classes**  ~~GET~~
 
 - **/classes/:id/members**  ~~GET~~
 >params: id class
