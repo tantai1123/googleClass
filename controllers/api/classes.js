@@ -16,7 +16,7 @@ const { MyError } = require('../../utils/myError');
 
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   let result = [];
-  Class.find({ students: { $eq: req.user.id } })
+  Class.find({ students: { $eq: req.user.id } || { teacher: { $eq: req.user.name } } })
     .sort({ date: -1 })
     .then(classes => {
       for (const classs of classes) {
@@ -35,9 +35,9 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
     })
     .catch(err => res.status(404).json({ noclass: 'Không tìm thấy nhóm nào' }));
 });
-router.get('/:clId', passport.authenticate('jwt', { session: false }),async (req, res) => {
+router.get('/:clId', passport.authenticate('jwt', { session: false }), async (req, res) => {
   await Class.findById(req.params.clId).then(classs => {
-    if (classs.members.indexOf(req.user.id) == -1) {
+    if (classs.students.indexOf(req.user.id) == -1 || classs.teacher.name === req.user.name) {
       return res.status(402).json({
         statusCode: -1,
         message: 'Bạn không ở trong nhóm này',
@@ -77,67 +77,53 @@ router.get('/:clId', passport.authenticate('jwt', { session: false }),async (req
     }))
 });
 
-router.post('/create', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  User.findById(req.user.id).then(async user => {
-    if (!user.isTeacher) {
-      return res.status(402).json({
-        statusCode: -1,
-        message: 'Bạn không phải là giảng viên',
-        data: 0
-      });
-    } else {
-      const { errors, isValid } = validateCreateClass(req.body);
-      if (!isValid) {
-        return res.status(400).json(errors);
-      }
-      const newClass = new Class({
-        name: req.body.name,
-        teacher: req.user.name,
-        members: req.user.id,
-        description: req.body.description,
-      })
-      await newClass.save().then(async classs => {
-        await User.findByIdAndUpdate(req.user.id, { $push: { class: classs._id } })
-        return res.json({
-          statusCode: -1,
-          message: 'Tạo lớp thành công',
-          data: {
-            _id: classs._id,
-            name: classs.name,
-            description: classs.description,
-            teacher: classs.teacher,
-          }
-        })
-      });
-    }
-  })
-});
-router.get('/:clId/teachers', passport.authenticate('jwt', { session: false }), async (req, res) => {
+
+// router.get('/:clId/teachers', passport.authenticate('jwt', { session: false }), async (req, res) => {
+//   Class.findById(req.params.clId).then(classs => {
+//     if (classs.students.indexOf(req.user.id) == -1 && classs.teacher.name !== req.user.name) {
+//       return res.status(401).json({ notJoined: 'Bạn chưa tham gia nhóm' });
+//     } else {
+//       return res.json({
+//         statusCode: 1,
+//         message: 'Lấy danh sách giảng viên thành công',
+//         data: classs.teacher
+//       })
+//     }
+//   }).catch(err => res.json({
+//     statusCode: -1,
+//     message: 'Không tìm được nhóm',
+//     data: 0
+//   }));
+// });
+// router.get('/:clId/students', passport.authenticate('jwt', { session: false }), async (req, res) => {
+//   Class.findById(req.params.clId).then(classs => {
+//     if (classs.students.indexOf(req.user.id) == -1 && classs.teacher.name !== req.user.name) {
+//       return res.status(401).json({ notJoined: 'Bạn chưa tham gia nhóm' });
+//     } else {
+//       return res.json({
+//         statusCode: 1,
+//         message: 'Lấy danh sách thành viên thành công',
+//         data: classs.students
+//       })
+//     }
+//   }).catch(err => res.json({
+//     statusCode: -1,
+//     message: 'Không tìm được nhóm',
+//     data: 0
+//   }));
+// });
+router.get('/:clId/members', passport.authenticate('jwt', { session: false }), async (req, res) => {
   Class.findById(req.params.clId).then(classs => {
-    if (classs.members.indexOf(req.user.id) == -1) {
-      return res.status(401).json({ notAuthorized: 'Bạn chưa tham gia nhóm' });
+    if (classs.students.indexOf(req.user.id) == -1 && classs.teacher.name !== req.user.name) {
+      return res.status(401).json({ notJoined: 'Bạn chưa tham gia nhóm' });
     } else {
       return res.json({
         statusCode: 1,
-        message: 'Lấy danh sách giảng viên thành công',
-        data: classs.teacher
-      })
-    }
-  }).catch(err => res.json({
-    statusCode: -1,
-    message: 'Không tìm được nhóm',
-    data: 0
-  }));
-});
-router.get('/:clId/students', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  Class.findById(req.params.clId).then(classs => {
-    if (classs.members.indexOf(req.user.id) == -1) {
-      return res.status(401).json({ notAuthorized: 'Bạn chưa tham gia nhóm' });
-    } else {
-      return res.json({
-        statusCode: 1,
-        message: 'Lấy danh sách giảng viên thành công',
-        data: classs.students
+        message: 'Lấy danh sách thành viên thành công',
+        data: {
+          teacher: classs.teacher,
+          students: classs.students
+        }
       })
     }
   }).catch(err => res.json({

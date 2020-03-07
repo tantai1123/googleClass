@@ -308,34 +308,6 @@ router.post('/reset/:token', function (req, res) {
         })
     });
 });
-router.get('/all', password.authenticate('jwt', { session: false }), async (req, res) => {
-    let result = [];
-    if (req.user.isAdmin) {
-        await User.find()
-            .sort({ gmail : -1 })
-            .then(users => {
-                for (const user of users) {
-                    result.push({
-                        gmail: user.gmail,
-                        name: user.name,
-                        role: user.isTeacher
-                    })
-                }
-                return res.json({
-                    statusCode: 1,
-                    message: 'Danh sách người dùng',
-                    data: result
-                })
-            })
-            .catch(err => res.status(404).json({ nouser: 'Không tìm thấy người dùng nào' }));
-    } else {
-        return res.json({
-            statusCode: -1,
-            message: 'Bạn không có quyền',
-            data: 0
-        })
-    }
-})
 // Truy xuất thông tin tài khoản hiện tại
 router.get('/current', password.authenticate('jwt', { session: false }), (req, res) => {
     res.json({
