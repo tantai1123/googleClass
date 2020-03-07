@@ -18,7 +18,7 @@
 - Add students
 
 ## api
-1. User
+1. User `<addr>` SS
 - **/users/register**  ~~POST~~
 >gmail, name, password, passwordCfm, secretCode
 
