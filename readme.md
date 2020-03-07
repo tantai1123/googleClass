@@ -55,7 +55,7 @@ params: id class, id user
 params: id class, id user
 
 - **/admin/class/:classid/members**
-params: id class
+>params: id class
 
 4. Class
 - **/classes**
