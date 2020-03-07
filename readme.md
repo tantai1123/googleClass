@@ -19,46 +19,46 @@
 
 ## api
 1. User
-- **/users/register**
+- **/users/register**  ~~POST~~
 >gmail, name, password, passwordCfm, secretCode
 
-- **/users/login**
+- **/users/login**  ~~POST~~
 >gmail, password
 
-- **/users/current**
+- **/users/current**  ~~GET~~
 
 2. Profile
-- **/profile**
+- **/profile**  ~~GET~~
 
-- **/profile/user/:name**
-
-- **/profile**
+- **/profile/user/:name**  ~~GET~~
+>params: user name
+- **/profile**  ~~POST~~
 >fullname, maso, facebook, zalo, twitter, instagram
 
-- **/profile/education**
+- **/profile/education**  ~~POST~~
 >school, degree, fieldofstudy, from, to, current, description
 
-- **/profile/education/:id** (delete 1 education)
+- **/profile/education/:id** (delete 1 education) ~~POST~~
 
 3. Admin (admin@gmail.com - admin1234)
-- **/admin/class/create**
+- **/admin/class/create**  ~~POST~~
 >name, description, startTime, endTime, time
 
-- **/admin/user**
+- **/admin/user**  ~~GET~~
 
-- **/admin/class**
+- **/admin/class**  ~~GET~~
 
-- **/admin/class/:classid/addteacher/:idteacher**
+- **/admin/class/:classid/addteacher/:idteacher**  ~~POST~~
 >params: id class, id user
 
-- **/admin/class/:classid/addstudent/:idstudent**
+- **/admin/class/:classid/addstudent/:idstudent**  ~~POST~~
 >params: id class, id user
 
-- **/admin/class/:classid/members**
+- **/admin/class/:classid/members** ~~POST~~
 >params: id class
 
-4. Class
+4. Class  ~~GET~~
 - **/classes**
 
-- **/classes/:id/members**
+- **/classes/:id/members**  ~~GET~~
 >params: id class
