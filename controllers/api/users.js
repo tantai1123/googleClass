@@ -202,11 +202,11 @@ router.post('/forgot', function (req, res, next) {
             var mailOptions = {
                 to: user.gmail,
                 from: adminMail.user,
-                subject: 'Node.js Password Reset',
-                text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-                    'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-                    'http://' + req.headers.host + '/api/users/reset/' + token + '\n\n' +
-                    'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+                subject: 'Yêu cầu thay đổi mật khẩu từ website gì gì đó',
+                text: 'Bạn nhận được thư này vì bạn (hoặc ai đó) đã yêu cầu thay đổi password tài khoản của bạn.\n\n' +
+                    'Hãy nhấn vào link đính kèm, hoặc paste nó vào trình duyệt:\n\n' +
+                    'http://' + req.headers.host + '/users/reset/' + token + '\n\n' +
+                    'Nếu bạn không yêu cầu việc này thì bỏ qua thư này nhé!! ~Thân~.\n'
             };
             smtpTransport.sendMail(mailOptions, function (err) {
                 console.log('mail sent');
@@ -277,9 +277,9 @@ router.post('/reset/:token', function (req, res) {
             var mailOptions = {
                 to: user.email,
                 from: adminMail.user,
-                subject: 'Your password has been changed',
-                text: 'Hello,\n\n' +
-                    'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+                subject: 'Mật khẩu của bạn đã được thay đổi',
+                text: 'Chao xìn,\n\n' +
+                    'Đây là thư xác nhận rằng tài khoản của bạn: ' + user.email + ' vừa được đổi mật khẩu.\n'
             };
             smtpTransport.sendMail(mailOptions, function (err) {
                 res.json({
