@@ -25,6 +25,9 @@
 - **/users/login**  `<POST>`
 >gmail, password
 
+- **/users/changepassword**  `<POST>`
+>oldPassword, newPassword, passwordCfm
+
 - **/users/current**  `<GET>`
 
 2. *Profile*
