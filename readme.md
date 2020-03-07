@@ -18,47 +18,47 @@
 - Add students
 
 ## api
-1. User `<HTTP>` SS
-- **/users/register**  ~~POST~~
+1. User
+- **/users/register**  `<POST>`
 >gmail, name, password, passwordCfm, secretCode
 
-- **/users/login**  ~~POST~~
+- **/users/login**  `<POST>`
 >gmail, password
 
-- **/users/current**  ~~GET~~
+- **/users/current**  `<GET>`
 
 2. Profile
-- **/profile**  ~~GET~~
+- **/profile**  `<GET>`
 
-- **/profile/user/:name**  ~~GET~~
+- **/profile/user/:name**  `<GET>`
 >params: user name
-- **/profile**  ~~POST~~
+- **/profile**  `<POST>`
 >fullname, maso, facebook, zalo, twitter, instagram
 
-- **/profile/education**  ~~POST~~
+- **/profile/education**  `<POST>`
 >school, degree, fieldofstudy, from, to, current, description
 
-- **/profile/education/:id** (delete 1 education) ~~POST~~
+- **/profile/education/:id** (delete 1 education) `<POST>`
 
 3. Admin (admin@gmail.com - admin1234)
-- **/admin/class/create**  ~~POST~~
+- **/admin/class/create**  `<POST>`
 >name, description, startTime, endTime, time
 
-- **/admin/user**  ~~GET~~
+- **/admin/user**  `<GET>`
 
-- **/admin/class**  ~~GET~~
+- **/admin/class**  `<GET>`
 
-- **/admin/class/:classid/addteacher/:idteacher**  ~~POST~~
+- **/admin/class/:classid/addteacher/:idteacher**  `<POST>`
 >params: id class, id user
 
-- **/admin/class/:classid/addstudent/:idstudent**  ~~POST~~
+- **/admin/class/:classid/addstudent/:idstudent**  `<POST>`
 >params: id class, id user
 
-- **/admin/class/:classid/members** ~~POST~~
+- **/admin/class/:classid/members** `<POST>`
 >params: id class
 
 4. Class  
-- **/classes**  ~~GET~~
+- **/classes**  `<GET>`
 
-- **/classes/:id/members**  ~~GET~~
+- **/classes/:id/members**  `<GET>`
 >params: id class
