@@ -279,7 +279,7 @@ router.post('/reset/:token', function (req, res) {
                 from: adminMail.user,
                 subject: 'Mật khẩu của bạn đã được thay đổi',
                 text: 'Chao xìn,\n\n' +
-                    'Đây là thư xác nhận rằng tài khoản của bạn: ' + user.email + ' vừa được đổi mật khẩu.\n'
+                    'Đây là thư xác nhận rằng tài khoản ' + user.email + ' của bạn vừa được đổi mật khẩu.\n'
             };
             smtpTransport.sendMail(mailOptions, function (err) {
                 res.json({
