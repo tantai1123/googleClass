@@ -31,6 +31,8 @@
 - **/users/forgot**  `<POST>` (cái này anh register và login bằng gmail thật, r post forgot để nhận mail)
 >gmail
 
+- **/users/reset/:token**  `<POST>` (token được gửi trong mail)
+>newPassword, passwordCfm
 - **/users/current**  `<GET>`
 
 2. *Profile*

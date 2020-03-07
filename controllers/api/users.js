@@ -176,16 +176,14 @@ router.post('/forgot', function (req, res, next) {
         function (token, done) {
             User.findOne({ gmail: req.body.gmail }, function (err, user) {
                 if (!user) {
-                    // req.flash('error', 'No account with that email address exists.');
                     res.json({
                         statusCode: -1,
                         message: 'Tài khoản không tồn tại',
                         data: 0
                     })
-                    // return res.redirect('/forgot');
                 } else {
                     user.resetPasswordToken = token;
-                    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+                    user.resetPasswordExpires = Date.now() + 600000; // 10 min
 
                     user.save(function (err) {
                         done(err, token, user);
@@ -212,8 +210,6 @@ router.post('/forgot', function (req, res, next) {
             };
             smtpTransport.sendMail(mailOptions, function (err) {
                 console.log('mail sent');
-                // req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
-                // done(err, 'done');
                 res.json({
                     statusCode: 1,
                     message: 'Đã gửi mail tới ' + user.gmail,
@@ -222,14 +218,11 @@ router.post('/forgot', function (req, res, next) {
         }
     ], function (err) {
         if (err) return next(err);
-        // res.redirect('/forgot');
     });
 });
 router.get('/reset/:token', async (req, res) => {
     await User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, (err, user) => {
         if (!user) {
-            // req.flash('error', 'Password reset token is invalid or has expired.');
-            // return res.redirect('/forgot');
             return res.json({
                 statusCode: -1,
                 message: 'Token đã hết hạn',
@@ -237,10 +230,9 @@ router.get('/reset/:token', async (req, res) => {
         } else {
             return res.json({
                 statusCode: 1,
-                message: 'Trang thay đổi mật khẩu'
+                message: 'Trang này thay đổi mật khẩu'
             })
         }
-        //   res.render('reset', {token: req.params.token});
 
     });
 });
@@ -249,11 +241,9 @@ router.post('/reset/:token', function (req, res) {
         function (done) {
             User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function (err, user) {
                 if (!user) {
-                    // req.flash('error', 'Password reset token is invalid or has expired.');
-                    // return res.redirect('back');
                     res.json({
                         statusCode: -1,
-                        message: 'Token invalid or has expried'
+                        message: 'Token hết hạn'
                     });
                 } else {
                     const { errors, isValid } = ValidatePasswordInput(req.body);
@@ -267,7 +257,7 @@ router.post('/reset/:token', function (req, res) {
                                 await User.findOneAndUpdate({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, { $set: { password: req.body.newPassword } });
                                 return res.status(400).json({
                                     statusCode: 1,
-                                    message: 'Thay đổi mật khẩu thành công',
+                                    message: 'Thay đổi mật khẩu thành công, mời đăng nhập lại',
                                     data: 0
                                 });
                             })
@@ -292,8 +282,6 @@ router.post('/reset/:token', function (req, res) {
                     'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
             };
             smtpTransport.sendMail(mailOptions, function (err) {
-                //   req.flash('success', 'Success! Your password has been changed.');
-                //   done(err);
                 res.json({
                     statusCode: 1,
                     message: 'Thay đổi password thành công'
@@ -301,14 +289,12 @@ router.post('/reset/:token', function (req, res) {
             });
         }
     ], function (err) {
-        //   res.redirect('/campgrounds');
         return res.json({
             statusCode: -1,
             message: 'Lỗi'
         })
     });
 });
-// Truy xuất thông tin tài khoản hiện tại
 router.get('/current', password.authenticate('jwt', { session: false }), (req, res) => {
     res.json({
         id: req.user.id,
