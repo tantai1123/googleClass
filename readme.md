@@ -52,7 +52,7 @@ name, description, startTime, endTime, time
 params: id class, id user
 
 - /admin/class/:classid/addstudent/:idstudent
-params: id class, id user
+*params: id class, id user
 
 - /admin/class/:classid/members
 params: id class
