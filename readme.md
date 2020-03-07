@@ -28,6 +28,9 @@
 - **/users/changepassword**  `<POST>`
 >oldPassword, newPassword, passwordCfm
 
+- **/users/forgot**  `<POST>` (cái này anh register và login bằng gmail thật, r post forgot để nhận mail)
+>gmail
+
 - **/users/current**  `<GET>`
 
 2. *Profile*
