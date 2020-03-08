@@ -104,7 +104,8 @@ router.get('/class/:clId', passport.authenticate('jwt', { session: false }), asy
                             author: post.author,
                             text: post.text,
                             document: post.document,
-                            comments: post.comments
+                            comments: post.comments,
+                            date: date
                         })
                     }
                     return res.json({
@@ -184,6 +185,34 @@ router.get('/user/all', passport.authenticate('jwt', { session: false }), async 
         })
     }
 });
+router.get('/all', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    if (req.user.isAdmin) {
+      await Profile.find()
+        .populate('user', ['name', 'avatar'])
+        .then(profiles => {
+          if (!profiles) {
+            return res.status(404).json({
+              statusCode: -1,
+              message: 'Không tìm thấy thông tin người dùng nào',
+              data: 0
+            });
+          }
+          res.json({
+            statusCode: 1,
+            message: 'Lấy thông tin thành công',
+            data: profiles
+          });
+        })
+        .catch(err => res.status(404).json({ profiles: 'Không có profile nào' }));
+    }
+    else {
+      res.json({
+        statusCode: -1,
+        message: 'Bạn không có quyền truy cập',
+        data: 0
+      })
+    }
+  });
 router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
     async function addStudents(idSender, idReceiver) {
         checkObjectId(idSender, idReceiver)

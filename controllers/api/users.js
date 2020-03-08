@@ -59,7 +59,8 @@ router.post('/register', (req, res) => {
                                 name: req.body.name,
                                 avatar,
                             });
-                            if (req.body.secretCode === 'secretcode123') { newUser.isTeacher = true; }
+                            if (req.body.secretCode === '-1') { newUser.isTeacher = false; }
+                            else {}
                             newUser.save()
                                 .then(user => res.json({
                                     statusCode: 1,

@@ -45,34 +45,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
 );
 
 //GET all Profile
-router.get('/all', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  if (req.user.isAdmin) {
-    await Profile.find()
-      .populate('user', ['name', 'avatar'])
-      .then(profiles => {
-        if (!profiles) {
-          return res.status(404).json({
-            statusCode: -1,
-            message: 'Không tìm thấy thông tin người dùng nào',
-            data: 0
-          });
-        }
-        res.json({
-          statusCode: 1,
-          message: 'Lấy thông tin thành công',
-          data: profiles
-        });
-      })
-      .catch(err => res.status(404).json({ profiles: 'Không có profile nào' }));
-  }
-  else {
-    res.json({
-      statusCode: -1,
-      message: 'Bạn không có quyền truy cập',
-      data: 0
-    })
-  }
-});
+
 
 //GET profile/user/:user_id
 router.get('/user/:name', async (req, res) => {
