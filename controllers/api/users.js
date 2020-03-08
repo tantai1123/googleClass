@@ -44,8 +44,8 @@ router.post('/register', (req, res) => {
                 } else {
                     const avatar = gravatar.url(req.body.gmail, {
                         s: '200', //size
-                        r: 'pg', //rating
-                        d: 'mm' //default
+                        // r: 'pg', //rating
+                        // d: 'mm' //default
                     });
                     // Mã hóa       
                     bcrypt.genSalt(10, (err, salt) => {
