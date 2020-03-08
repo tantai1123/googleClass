@@ -112,7 +112,8 @@ router.get('/:clId', passport.authenticate('jwt', { session: false }), async (re
 //   }));
 // });
 router.get('/:clId/members', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  Class.findById(req.params.clId).then(classs => {
+  Class.findById(req.params.clId).populate('user', ['name', 'avatar'])
+  .then(classs => {
     if (classs.students.indexOf(req.user.id) == -1 && classs.teacher != req.user.id) {
       return res.status(401).json({ notJoined: 'Bạn chưa tham gia nhóm' });
     } else {
