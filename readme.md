@@ -52,7 +52,7 @@
 - **/admin/class/create**  `<POST>`
 >name, description, startTime, endTime, time
 
-- **/admin/user**  `<GET>`
+- **/admin/user/all**  `<GET>`
 
 - **/admin/class**  `<GET>`
 

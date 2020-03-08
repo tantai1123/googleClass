@@ -15,8 +15,9 @@ const { MyError } = require('../../utils/myError');
 
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   let result = [];
-  Class.find({ students: { $eq: req.user.id } || { teacher: { $eq: req.user.name } } })
+  Class.find({ members: { $eq: req.user.id } })
     .sort({ date: -1 })
+    .populate('teacher', ['name'])
     .then(classes => {
       for (const classs of classes) {
         result.push({
@@ -36,7 +37,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 });
 router.get('/:clId', passport.authenticate('jwt', { session: false }), async (req, res) => {
   await Class.findById(req.params.clId).then(classs => {
-    if (classs.students.indexOf(req.user.id) == -1 || classs.teacher.name === req.user.name) {
+    if (classs.members.indexOf(req.user.id) == -1) {
       return res.status(402).json({
         statusCode: -1,
         message: 'Bạn không ở trong nhóm này',
@@ -76,62 +77,27 @@ router.get('/:clId', passport.authenticate('jwt', { session: false }), async (re
     }))
 });
 
-
-// router.get('/:clId/teachers', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//   Class.findById(req.params.clId).then(classs => {
-//     if (classs.students.indexOf(req.user.id) == -1 && classs.teacher.name !== req.user.name) {
-//       return res.status(401).json({ notJoined: 'Bạn chưa tham gia nhóm' });
-//     } else {
-//       return res.json({
-//         statusCode: 1,
-//         message: 'Lấy danh sách giảng viên thành công',
-//         data: classs.teacher
-//       })
-//     }
-//   }).catch(err => res.json({
-//     statusCode: -1,
-//     message: 'Không tìm được nhóm',
-//     data: 0
-//   }));
-// });
-// router.get('/:clId/students', passport.authenticate('jwt', { session: false }), async (req, res) => {
-//   Class.findById(req.params.clId).then(classs => {
-//     if (classs.students.indexOf(req.user.id) == -1 && classs.teacher.name !== req.user.name) {
-//       return res.status(401).json({ notJoined: 'Bạn chưa tham gia nhóm' });
-//     } else {
-//       return res.json({
-//         statusCode: 1,
-//         message: 'Lấy danh sách thành viên thành công',
-//         data: classs.students
-//       })
-//     }
-//   }).catch(err => res.json({
-//     statusCode: -1,
-//     message: 'Không tìm được nhóm',
-//     data: 0
-//   }));
-// });
 router.get('/:clId/members', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  (await Class.findById(req.params.clId)
-    .populate('teacher', ['name', 'avatar']))
-    .populated('students')
-    .then(classs => {
-      if (classs.students.indexOf(req.user.id) == -1 && classs.teacher != req.user.id) {
-        return res.status(401).json({ notJoined: 'Bạn chưa tham gia nhóm' });
-      } else {
-        return res.json({
-          statusCode: 1,
-          message: 'Lấy danh sách thành viên thành công',
-          data: {
-            teacher: classs.teacher,
-            students: classs.students
-          }
-        })
-      }
-    }).catch(err => res.json({
-      statusCode: -1,
-      message: 'Không tìm được nhóm',
-      data: 0
-    }));
+  Class.findById(req.params.clId)
+  .populate('teacher', ['name', 'avatar'])
+  .populate('students', ['name', 'avatar'])
+  .then(classs => {
+    if (classs.members.indexOf(req.user.id) == -1) {
+      return res.status(401).json({ notJoined: 'Bạn chưa tham gia lớp' });
+    } else {
+      return res.json({
+        statusCode: 1,
+        message: 'Lấy danh sách thành viên thành công',
+        data: {
+          teacher: classs.teacher,
+          students: classs.students
+        }
+      })
+    }
+  }).catch(err => res.json({
+    statusCode: -1,
+    message: 'Không tìm được lớp',
+    data: 0
+  }));
 });
 module.exports = router;

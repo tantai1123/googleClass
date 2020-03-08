@@ -6,10 +6,12 @@ const classSchema = new Schema({
     type: String,
     required: true
   },
-  // members: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'User'
-  // },
+  members: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ],
   teacher: {
     type: Schema.Types.ObjectId,
     ref: 'User'

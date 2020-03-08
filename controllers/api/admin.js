@@ -16,34 +16,36 @@ const { MyError } = require('../../utils/myError');
 
 router.get('/class', passport.authenticate('jwt', { session: false }), (req, res) => {
     let result = [];
-    User.findById(req.user.id).then(user => {
-        if (!user.isAdmin) {
-            return res.json({
-                statusCode: -1,
-                message: 'Bạn không có quyền',
-                data: 0
-            });
-        } else {
-            Class.find()
-                .sort({ date: -1 })
-                .then(classes => {
-                    for (const classs of classes) {
-                        result.push({
-                            id: classs._id,
-                            name: classs.name,
-                            teacher: classs.teacher,
-                            description: classs.description,
+    User.findById(req.user.id)
+        .then(user => {
+            if (!user.isAdmin) {
+                return res.json({
+                    statusCode: -1,
+                    message: 'Bạn không có quyền',
+                    data: 0
+                });
+            } else {
+                Class.find()
+                    .populate('teacher', ['name'])
+                    .sort({ date: -1 })
+                    .then(classes => {
+                        for (const classs of classes) {
+                            result.push({
+                                id: classs._id,
+                                name: classs.name,
+                                teacher: classs.teacher,
+                                description: classs.description,
+                            })
+                        }
+                        return res.json({
+                            statusCode: 1,
+                            message: 'Thành công',
+                            data: result
                         })
-                    }
-                    return res.json({
-                        statusCode: 1,
-                        message: 'Thành công',
-                        data: result
                     })
-                })
-                .catch(err => res.status(404).json({ noclass: 'Không tìm thấy nhóm nào' }));
-        }
-    })
+                    .catch(err => res.status(404).json({ noclass: 'Không tìm thấy nhóm nào' }));
+            }
+        })
 });
 router.post('/class/create', passport.authenticate('jwt', { session: false }), async (req, res) => {
     User.findById(req.user.id).then(async user => {
@@ -138,16 +140,19 @@ router.get('/class/:clId/members', passport.authenticate('jwt', { session: false
                 data: 0
             });
         } else {
-            await Class.findById(req.params.clId).then(classs => {
-                return res.json({
-                    statusCode: 1,
-                    message: 'Thành công',
-                    data: {
-                        students: classs.students,
-                        teacher: classs.teacher,
-                    }
+            await Class.findById(req.params.clId)
+                .populate('teacher', ['name', 'avatar'])
+                .populate('students', ['name', 'avatar'])
+                .then(classs => {
+                    return res.json({
+                        statusCode: 1,
+                        message: 'Thành công',
+                        data: {
+                            students: classs.students,
+                            teacher: classs.teacher,
+                        }
+                    })
                 })
-            })
         }
     })
         .catch(err => res.json({
@@ -185,34 +190,34 @@ router.get('/user/all', passport.authenticate('jwt', { session: false }), async 
         })
     }
 });
-router.get('/all', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.get('/profile/all', passport.authenticate('jwt', { session: false }), async (req, res) => {
     if (req.user.isAdmin) {
-      await Profile.find()
-        .populate('user', ['name', 'avatar'])
-        .then(profiles => {
-          if (!profiles) {
-            return res.status(404).json({
-              statusCode: -1,
-              message: 'Không tìm thấy thông tin người dùng nào',
-              data: 0
-            });
-          }
-          res.json({
-            statusCode: 1,
-            message: 'Lấy thông tin thành công',
-            data: profiles
-          });
-        })
-        .catch(err => res.status(404).json({ profiles: 'Không có profile nào' }));
+        await Profile.find()
+            .populate('user', ['name', 'avatar'])
+            .then(profiles => {
+                if (!profiles) {
+                    return res.status(404).json({
+                        statusCode: -1,
+                        message: 'Không tìm thấy thông tin người dùng nào',
+                        data: 0
+                    });
+                }
+                res.json({
+                    statusCode: 1,
+                    message: 'Lấy thông tin thành công',
+                    data: profiles
+                });
+            })
+            .catch(err => res.status(404).json({ profiles: 'Không có profile nào' }));
     }
     else {
-      res.json({
-        statusCode: -1,
-        message: 'Bạn không có quyền truy cập',
-        data: 0
-      })
+        res.json({
+            statusCode: -1,
+            message: 'Bạn không có quyền truy cập',
+            data: 0
+        })
     }
-  });
+});
 router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
     async function addStudents(idSender, idReceiver) {
         checkObjectId(idSender, idReceiver)
@@ -227,7 +232,7 @@ router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { se
             new: true,
             fields: { name: 1 }
         };
-        const updateObject = { $push: { students: idSender } };
+        const updateObject = { $push: { students: idSender, members: idSender } };
         const receiver = await Class.findByIdAndUpdate(idReceiver, updateObject, options);
         if (!receiver) throw new MyError('Không tìm thấy lớp', 404);
         return sender;
@@ -273,7 +278,10 @@ router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { se
             new: true,
             fields: { name: 1 }
         };
-        const updateObject = { $push: { teacher: idSender } };
+        const updateObject = {
+            $set: { teacher: idSender },
+            $push: { members: idSender }
+        };
         const receiver = await Class.findByIdAndUpdate(idReceiver, updateObject, options);
         if (!receiver) throw new MyError('Không tìm thấy lớp này', 404);
         return sender;
