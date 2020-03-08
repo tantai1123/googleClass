@@ -43,7 +43,7 @@ router.post('/register', (req, res) => {
                     });
                 } else {
                     const avatar = gravatar.url(req.body.gmail, {
-                        s: '200', //size
+                        s: '100', //size
                         // r: 'pg', //rating
                         // d: 'mm' //default
                     });
