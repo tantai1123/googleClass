@@ -112,24 +112,26 @@ router.get('/:clId', passport.authenticate('jwt', { session: false }), async (re
 //   }));
 // });
 router.get('/:clId/members', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  Class.findById(req.params.clId).populate('teacher', ['name', 'avatar'])
-  .then(classs => {
-    if (classs.students.indexOf(req.user.id) == -1 && classs.teacher != req.user.id) {
-      return res.status(401).json({ notJoined: 'Bạn chưa tham gia nhóm' });
-    } else {
-      return res.json({
-        statusCode: 1,
-        message: 'Lấy danh sách thành viên thành công',
-        data: {
-          teacher: classs.teacher,
-          students: classs.students
-        }
-      })
-    }
-  }).catch(err => res.json({
-    statusCode: -1,
-    message: 'Không tìm được nhóm',
-    data: 0
-  }));
+  (await Class.findById(req.params.clId)
+    .populate('teacher', ['name', 'avatar']))
+    .populated('students')
+    .then(classs => {
+      if (classs.students.indexOf(req.user.id) == -1 && classs.teacher != req.user.id) {
+        return res.status(401).json({ notJoined: 'Bạn chưa tham gia nhóm' });
+      } else {
+        return res.json({
+          statusCode: 1,
+          message: 'Lấy danh sách thành viên thành công',
+          data: {
+            teacher: classs.teacher,
+            students: classs.students
+          }
+        })
+      }
+    }).catch(err => res.json({
+      statusCode: -1,
+      message: 'Không tìm được nhóm',
+      data: 0
+    }));
 });
 module.exports = router;
