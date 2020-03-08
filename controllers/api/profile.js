@@ -83,7 +83,6 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
 
   const profileFields = {};
   profileFields.user = req.user.id;
-  profileFields.name = req.user.name;
   if (req.body.fullname) profileFields.fullname = req.body.fullname;
   if (req.body.maso) profileFields.maso = req.body.maso;
 
@@ -96,7 +95,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
   await Profile.findOne({ user: req.user.id })
     .then(profile => {
       if (profile) {
-        //Update
+        //Có thì update
         Profile.findOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true })
           .then(profile => res.json({
             statusCode: 1,
@@ -104,9 +103,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
             data: profile
           }));
       } else {
-        //Create
-        //Kiểm tra
-        //Lưu profile vừa tạo
+        //Chưa có thì tạo mới
         new Profile(profileFields).save().then(profile => res.json({
           statusCode: 1,
           message: 'Tạo mới thông tin thành công',
