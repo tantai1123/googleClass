@@ -257,7 +257,7 @@ router.post('/reset/:token', function (req, res) {
                                 await User.findOneAndUpdate({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, { $set: { password: req.body.newPassword } });
                                 return res.status(400).json({
                                     statusCode: 1,
-                                    message: 'Thay đổi mật khẩu thành công, mời đăng nhập lại',
+                                    message: 'Thay đổi mật khẩu thành công, mời đăng nhập lại!',
                                     data: 0
                                 });
                             })

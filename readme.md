@@ -70,3 +70,5 @@
 
 - **/classes/:classId/members**  `<GET>`
 >params: id class
+
+- 
