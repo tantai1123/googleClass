@@ -14,7 +14,7 @@ const validatePostInput = require('../../validation/post');
 const { checkObjectId } = require('../../utils/checkObjectId');
 const { MyError } = require('../../utils/myError');
 
-router.get('/class', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.get('/class/all', passport.authenticate('jwt', { session: false }), (req, res) => {
     let result = [];
     User.findById(req.user.id)
         .then(user => {

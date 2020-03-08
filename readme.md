@@ -54,7 +54,9 @@
 
 - **/admin/user/all**  `<GET>`
 
-- **/admin/class**  `<GET>`
+- **/admin/profile/all**  `<GET>`
+
+- **/admin/class/all**  `<GET>`
 
 - **/admin/class/:classId/addteacher/:idTeacher**  `<POST>`
 >params: id class, id user
