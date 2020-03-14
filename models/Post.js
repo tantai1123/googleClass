@@ -22,9 +22,17 @@ const postSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  document: {
+  image: {
     type: String,
     required: false
+  },
+  extension: {
+    type: Boolean,
+    default: false
+  },
+  fileName: {
+    type: String,
+    default: 'No name'
   },
   comments: [
     {

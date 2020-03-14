@@ -7,6 +7,11 @@ const Class = require('../../models/Class');
 const User = require('../../models/User');
 const Post = require('../../models/Post');
 const Profile = require('../../models/Profile');
+const { UploadFileServices } = require('../../utils/upload');
+
+const multer = require('multer');
+const fs = require('fs');
+const imageUploader = multer({ dest: 'images/' });
 
 const validatePostInput = require('../../validation/post');
 
@@ -99,5 +104,65 @@ router.get('/:clId/members', passport.authenticate('jwt', { session: false }), a
     message: 'Không tìm được lớp',
     data: 0
   }));
+});
+router.post('/:clId/', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const { errors, isValid } = validatePostInput(req.body);
+  let post;
+  //Kiem tra
+  if (!isValid) {
+      return res.status(400).json(errors);
+  }
+
+  else {
+      post = new Post({
+          text: req.body.text,
+          author: req.user.name,
+          userId: req.user.id,
+          image: req.body.image,
+          extension: req.body.extension,
+          fileName: req.body.fileName,
+          class: req.params.clId
+      });
+      /////////////////
+      this.post.save().then(post => res.json({
+          statusCode: 1,
+          message: 'Đăng bài thành công',
+          data: {
+              _id: post._id,
+              author: post.author,
+              text: post.text,
+              likes: post.likes,
+              image: post.image,
+              comments: post.comments
+          }
+      }));
+  }
+});
+// upload file
+router.post('/:clId/upload', imageUploader.single('myImage'), async (req, res) => {
+  const dataFile = req.file;
+  let extensionType = false;
+  let extensionName = dataFile.originalname;
+  extensionName = extensionName.split('.').pop();
+
+  const fullPathFile = dataFile.path;
+
+  const newFullPath = `${fullPathFile}.${extensionName}`;
+  fs.renameSync(fullPathFile, newFullPath);
+
+  if (extensionName === 'jpg' || extensionName === 'jpeg' || extensionName === 'png') {
+      extensionType = true;
+  }
+
+  const result = await UploadFileServices.uploadFile(newFullPath, dataFile.mimetype, dataFile.filename);
+  res.json({
+      statusCode: 1,
+      message: 'Upload file thành công',
+      data: {
+          url: result,
+          extension: extensionType,
+          originalname: dataFile.originalname
+      }
+  });
 });
 module.exports = router;
