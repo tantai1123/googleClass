@@ -73,4 +73,10 @@
 - **/classes/:classId/members**  `<GET>`
 >params: id class
 
-- 
+---
+- **/classes/:classId/** `<POST>`
+>params: id class
+>
+- **/classes/:classId/upload** `<POST>`
+---
+(hai cái này cùng là post bài)
