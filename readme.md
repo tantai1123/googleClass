@@ -76,7 +76,8 @@
 ---
 - **/classes/:classId/** `<POST>`
 >params: id class
->
+>text
 - **/classes/:classId/upload** `<POST>`
+>form-data: myFile
+(hai cái này là post bài kèm file, dùng formdata và thư viên axios)
 ---
-(hai cái này cùng là post bài)
