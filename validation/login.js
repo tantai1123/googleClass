@@ -8,7 +8,7 @@ module.exports = function ValidateLoginInput(data){
   data.password = !isEmpty(data.password) ? data.password : '';
 
   if(Validator.isEmpty(data.name)){
-    errors.name ='Email không được để trống';
+    errors.name ='Tên đăng nhập không được để trống';
   }
   if(Validator.isEmpty(data.password)){
     errors.password ='Mật khẩu không được để trống';

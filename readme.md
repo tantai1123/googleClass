@@ -23,7 +23,7 @@
 >gmail, name, password, passwordCfm, secretCode
 
 - **/users/login**  `<POST>`
->gmail, password
+>name, password
 
 - **/users/changepassword**  `<POST>`
 >oldPassword, newPassword, passwordCfm
@@ -86,4 +86,4 @@
 >text, idPost
 - **/comments** `<POST>` (Xóa comment)
 >params: idPost
-abc
+
