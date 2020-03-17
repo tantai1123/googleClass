@@ -83,4 +83,7 @@
 ---
 5. *Comment*
 - **/comments** `<POST>`
+>text, idPost
+- **/comments** `<POST>` (Xóa comment)
+>params: idPost
 
