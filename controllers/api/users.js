@@ -60,7 +60,7 @@ router.post('/register', (req, res) => {
                                 avatar,
                             });
                             if (req.body.secretCode === '-1') { newUser.isTeacher = false; }
-                            else {}
+                            else { }
                             newUser.save()
                                 .then(user => res.json({
                                     statusCode: 1,
@@ -194,10 +194,16 @@ router.post('/forgot', function (req, res, next) {
         },
         function (token, user, done) {
             var smtpTransport = nodemailer.createTransport({
-                service: 'Gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
                 auth: {
                     user: adminMail.user,
                     pass: adminMail.pass
+                },
+                tls: {
+                    // do not fail on invalid certs
+                    rejectUnauthorized: false
                 }
             });
             var mailOptions = {
