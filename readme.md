@@ -81,3 +81,6 @@
 >form-data: myFile
 (hai cái này là post bài kèm file, dùng formdata và thư viên axios)
 ---
+5. *Comment*
+- **/comments** `<POST>`
+
