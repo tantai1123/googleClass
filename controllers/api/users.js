@@ -80,7 +80,7 @@ router.post('/register', (req, res) => {
     });
 });
 router.post('/login', async (req, res) => {
-    const gmail = req.body.gmail;
+    const name = req.body.name;
     const password = req.body.password;
     const { errors, isValid } = validateLoginInput(req.body);
 
@@ -89,8 +89,8 @@ router.post('/login', async (req, res) => {
     }
 
     //Tìm tài khoản qua gmail
-    await User.findOne({ gmail }).then(user => {
-        //Kiểm tra gmail
+    await User.findOne({ name }).then(user => {
+        //Kiểm tra name
         if (!user) {
             return res.status(404).json({
                 statusCode: -1,
@@ -99,7 +99,7 @@ router.post('/login', async (req, res) => {
             });
         }
         else {
-            User.findOne({ gmail }).then(user => {
+            User.findOne({ name }).then(user => {
                 if (user) {
                     //Kiểm tra mật khẩu
                     bcrypt.compare(password, user.password).then(isMatch => {
