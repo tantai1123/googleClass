@@ -50,7 +50,8 @@ router.get('/:clId', passport.authenticate('jwt', { session: false }), async (re
       });
     }
     let result = []
-    return Post.find({ class: req.params.clId }).populate('comments',['author','text'])
+    return Post.find({ class: req.params.clId })
+      .populate('comments', ['author', 'text'])
       .sort({ _id: -1 })
       .then(posts => {
         for (const post of posts) {
