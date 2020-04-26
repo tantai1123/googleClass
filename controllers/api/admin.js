@@ -52,7 +52,7 @@ router.post('/class/create', passport.authenticate('jwt', { session: false }), a
         if (!user.isAdmin) {
             return res.status(402).json({
                 statusCode: -1,
-                message: 'Bạn không phải là giảng viên',
+                message: 'Bạn không phải là admin',
                 data: 0
             });
         } else {
