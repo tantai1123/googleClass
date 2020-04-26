@@ -86,5 +86,3 @@
 >text, idPost
 - **/comments** `<POST>` (Xóa comment)
 >params: idPost
-
-asdasd
