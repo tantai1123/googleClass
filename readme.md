@@ -17,7 +17,7 @@
 - Create class
 - Add students
 
-## api
+## API
 1. *User*
 - **/users/register**  `<POST>`
 >gmail, name, password, passwordCfm, secretCode
