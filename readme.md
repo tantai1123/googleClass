@@ -28,7 +28,7 @@
 - **/users/changepassword**  `<POST>`
 >oldPassword, newPassword, passwordCfm
 
-- **/users/forgot**  `<POST>` (cái này anh register và login bằng gmail thật, r post forgot để nhận mail)
+- **/users/forgot**  `<POST>` (cái này register và login bằng gmail thật, r post forgot để nhận mail)
 >gmail
 
 - **/users/reset/:token**  `<POST>` (token được gửi trong mail)
