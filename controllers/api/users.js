@@ -110,7 +110,10 @@ router.post('/login', async (req, res) => {
                                     res.json({
                                         statusCode: 1,
                                         message: 'Đăng nhập thành công',
-                                        token: 'Bearer ' + token
+                                        token: 'Bearer ' + token,
+                                        data: {
+                                            isAdmin: user.isAdmin
+                                        }
                                     });
                                 }
                             );
