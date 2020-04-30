@@ -262,7 +262,6 @@ router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { se
                 }));
         }
     })
-
 });
 router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
     async function addTeacher(idSender, idReceiver) {
