@@ -57,7 +57,11 @@ router.get('/handle', passport.authenticate('jwt', { session: false }), (req, re
       message: 'Thành công',
       data: profile
      }))
-    .catch(res.onError);
+    .catch({
+      statusCode: -1,
+      message: err.message,
+      data: 0
+    });
 });
 
 //GET profile/user/:user_id

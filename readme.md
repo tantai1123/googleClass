@@ -5,9 +5,12 @@
 - Login
 - Register
 - Get current user profile
+- Get handle profile
 - Create or edit user profile
 - Add education to profile
 - Delete education from profile
+- Change Password
+- Forgot password
 2. *Class*
 - CRUD post and comment
 - Get members
@@ -16,6 +19,8 @@
 - Get all profiles
 - Create class
 - Add students
+- Add teacher
+- Remove student
 
 ## API
 1. *User*
