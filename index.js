@@ -33,4 +33,4 @@ app.use('/admin', admin);
 
 const port = process.env.PORT || 1234;
 
-app.listen(port, () => console.log('Server đang khởi động'));
+app.listen(port, () => console.log(`Server đang khởi động trên port ${port}`));

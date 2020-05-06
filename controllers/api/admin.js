@@ -52,7 +52,7 @@ router.post('/class/create', passport.authenticate('jwt', { session: false }), a
         if (!user.isAdmin) {
             return res.status(402).json({
                 statusCode: -1,
-                message: 'Bạn không phải là giảng viên',
+                message: 'Bạn không phải là admin',
                 data: 0
             });
         } else {
@@ -262,7 +262,6 @@ router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { se
                 }));
         }
     })
-
 });
 router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
     async function addTeacher(idSender, idReceiver) {
