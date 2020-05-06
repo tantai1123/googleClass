@@ -45,7 +45,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
 );
 
 router.get('/handle', passport.authenticate('jwt', { session: false }), (req, res) => {
-  async function getHandleUser() {
+  async function getHandleUser(idUser) {
     const profile = await Profile.findOne({ user: idUser })
       .populate('user', ['name', 'avatar'])
     if (!profile) throw new MyError('Profile not found', 404);
