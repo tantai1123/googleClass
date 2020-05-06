@@ -44,8 +44,21 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
 }
 );
 
-//GET all Profile
-
+router.get('/handle', passport.authenticate('jwt', { session: false }), (req, res) => {
+  async function getHandleUser() {
+    const profile = await Profile.findOne({ user: idUser })
+      .populate('user', ['name', 'avatar'])
+    if (!profile) throw new MyError('Profile not found', 404);
+    return profile;
+  }
+  getHandleUser(req.user.id)
+    .then(profile => res.send({ 
+      statusCode: 1,
+      message: 'Thành công',
+      data: profile
+     }))
+    .catch(res.onError);
+});
 
 //GET profile/user/:user_id
 router.get('/user/:name', async (req, res) => {

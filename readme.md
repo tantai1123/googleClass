@@ -28,7 +28,7 @@
 - **/users/changepassword**  `<POST>`
 >oldPassword, newPassword, passwordCfm
 
-- **/users/forgot**  `<POST>` (cái này anh register và login bằng gmail thật, r post forgot để nhận mail)
+- **/users/forgot**  `<POST>` (cái này register và login bằng gmail thật, r post forgot để nhận mail)
 >gmail
 
 - **/users/reset/:token**  `<POST>` (token được gửi trong mail)
@@ -37,6 +37,8 @@
 
 2. *Profile*
 - **/profile**  `<GET>`
+
+- **/profile/handle** `<GET>`
 
 - **/profile/user/:name**  `<GET>`
 >params: user name
@@ -67,6 +69,9 @@
 - **/admin/class/:classId/members** `<POST>`
 >params: id class
 
+- **/admin/class/:clId/remove/:idUser** `<POST>`
+>params: id class, id user (student)
+
 4. *Class*  
 - **/classes**  `<GET>`
 
@@ -81,9 +86,11 @@
 >form-data: myFile
 (hai cái này là post bài kèm file, dùng formdata và thư viên axios)
 ---
+- **/classes/:clId/:id** `<DELETE>`
+>params: id class, id post
+
 5. *Comment*
 - **/comments** `<POST>`
 >text, idPost
 - **/comments** `<POST>` (Xóa comment)
 >params: idPost
-

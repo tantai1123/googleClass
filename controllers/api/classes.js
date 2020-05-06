@@ -168,4 +168,27 @@ router.post('/:clId/upload', imageUploader.single('myFile'), async (req, res) =>
     }
   });
 });
+router.delete('/:clId/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  async function removeStory(idUser, _id, idClass) {
+    checkObjectId(_id, idUser, idClass);
+    const query = { _id, userId: idUser };
+    const story = await Story.findOneAndRemove(query);
+    if (!story) throw new MyError('Không có quyền', 404);
+    await Comment.deleteOne({ _id: { $in: post.comments } });
+    await User.findByIdAndUpdate(idUser, { $pull: { posts: _id } });
+    await Class.findByIdAndUpdate(idClass, { $pull: { posts: _id } });
+    return story;
+  }
+  removeStory(req.user.id, req.params.id, req.params.clId)
+    .then(data => res.json({
+      statusCode: 1,
+      message: 'Xóa bài viết thành công',
+      data: data
+    }))
+    .catch(err => res.json({
+      statusCode: -1,
+      message: err.message,
+      data: 0
+    }));
+});
 module.exports = router;
