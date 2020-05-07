@@ -36,7 +36,7 @@
 - **/users/forgot**  `<POST>` (cái này register và login bằng gmail thật, r post forgot để nhận mail)
 >gmail
 
-- **/users/reset/:token**  `<POST>` (token được gửi trong mail)
+- **/users/reset/:token**  `<POST,GET>` (token được gửi trong mail)
 >newPassword, passwordCfm
 - **/users/current**  `<GET>`
 
@@ -97,5 +97,5 @@
 5. *Comment*
 - **/comments** `<POST>`
 >text, idPost
-- **/comments** `<POST>` (Xóa comment)
+- **/comments** `<DELETE>` (Xóa comment)
 >params: idPost
