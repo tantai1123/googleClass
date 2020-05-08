@@ -77,6 +77,10 @@
 - **/admin/class/:clId/remove/:idUser** `<POST>`
 >params: id class, id user (student)
 
+- **/admin/class/:clId** `<DELETE>`
+>params: id class
+
+
 4. *Class*  
 - **/classes**  `<GET>`
 

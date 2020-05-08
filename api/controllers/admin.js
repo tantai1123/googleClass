@@ -255,11 +255,7 @@ router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { se
                         gmail: data.gmail
                     }
                 }))
-                .catch(err => res.json({
-                    statusCode: -1,
-                    message: err.message,
-                    data: 0
-                }));
+                .catch(res.onError);
         }
     })
 });
@@ -303,11 +299,7 @@ router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { se
                         gmail: data.gmail
                     }
                 }))
-                .catch(err => res.json({
-                    statusCode: -1,
-                    message: err.message,
-                    data: 0
-                }));
+                .catch(res.onError);
         }
     })
 });
@@ -319,7 +311,7 @@ router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { sessio
             classes: { $ne: idReceiver },
         }
         const sender = await User.findOneAndUpdate(queryObject, { $pull: { classes: idReceiver } });
-        if (!sender) throw new MyError('Giảng viên này đã được thêm', 404);
+        if (!sender) throw new MyError('Không tìm thấy người dùng', 404);
 
         const updateObject = {
             $pull: { members: idSender }
@@ -345,12 +337,29 @@ router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { sessio
                         name: data.name,
                     }
                 }))
-                .catch(err => res.json({
-                    statusCode: -1,
-                    message: err.message,
-                    data: 0
-                }));
+                .catch(res.onError);
         }
     })
 });
+router.delete('/class/:clId', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    async function removeClass(idClass, idAdmin) {
+        checkObjectId(idClass, idAdmin)
+        const queryObject = {
+            _id: idAdmin,
+            isAdmin: true,
+        }
+        const admin = await User.findOne(queryObject);
+        if (!admin) throw new MyError('Không có quyền', 404);
+
+        const classs = await Class.findByIdAndRemove(idClass);
+        if (!classs) throw new MyError('Không tìm thấy lớp này', 404);
+        return classs;
+    }
+    removeClass(req.params.clId, req.user.id)
+    .then(classs => res.send({
+        statusCode: 1,
+        message: 'Xóa thành công'
+    }))
+    .catch(res.onError);
+})
 module.exports = router;

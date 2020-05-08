@@ -157,7 +157,6 @@ router.post('/:clId/upload', imageUploader.single('myFile'), async (req, res) =>
   if (extensionName === 'jpg' || extensionName === 'jpeg' || extensionName === 'png') {
     extensionType = true;
   }
-
   const result = await UploadFileServices.uploadFile(newFullPath, dataFile.mimetype, dataFile.filename);
   res.json({
     statusCode: 1,
