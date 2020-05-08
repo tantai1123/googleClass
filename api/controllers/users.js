@@ -105,7 +105,7 @@ router.post('/login', async (req, res) => {
                         if (isMatch) {
                             const payload = { id: user.id, name: user.name, avatar: user.avatar, perm: user.permission, isTeacher: user.isTeacher, isAdmin: user.isAdmin }; //Tạo jwt payload
                             //đăng nhập token, sau expiresIn mã sẽ hết hạn và phải đăng nhập lại
-                            jwt.sign(payload, keys.secretOrKey, { expiresIn: '10 days' },
+                            jwt.sign(payload, keys.secretOrKey, { expiresIn: '1 days' },
                                 (err, token) => {
                                     res.json({
                                         statusCode: 1,

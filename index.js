@@ -4,11 +4,11 @@ const passport = require('passport');
 const flash = require("connect-flash");
 
 
-const users = require('./controllers/api/users');
-const profile = require('./controllers/api/profile');
-const classes = require('./controllers/api/classes');
-const comments = require('./controllers/api/comments');
-const admin = require('./controllers/api/admin');
+const users = require('./api/controllers/users');
+const profile = require('./api/controllers/profile');
+const classes = require('./api/controllers/classes');
+const comments = require('./api/controllers/comments');
+const admin = require('./api/controllers/admin');
 var cors = require('cors')
 require('./config/seedDb');
 const app = express();
