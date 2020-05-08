@@ -115,7 +115,6 @@ router.post('/:clId', passport.authenticate('jwt', { session: false }), async (r
   if (!isValid) {
     return res.status(400).json(errors);
   }
-
   else {
     post = new Post({
       text: req.body.text,
@@ -126,6 +125,8 @@ router.post('/:clId', passport.authenticate('jwt', { session: false }), async (r
       fileName: req.body.fileName,
       class: req.params.clId
     });
+    await User.findByIdAndUpdate(req.user.id, { $push: { posts: post._id } });
+    await Class.findByIdAndUpdate(req.params.clId, { $push: { posts: post._id } });
     /////////////////
     post.save().then(post => res.json({
       statusCode: 1,
