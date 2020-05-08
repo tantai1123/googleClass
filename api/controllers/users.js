@@ -112,7 +112,8 @@ router.post('/login', async (req, res) => {
                                         message: 'Đăng nhập thành công',
                                         token: 'Bearer ' + token,
                                         data: {
-                                            isAdmin: user.isAdmin
+                                            isAdmin: user.isAdmin,
+                                            isTeacher: user.isTeacher
                                         }
                                     });
                                 }
