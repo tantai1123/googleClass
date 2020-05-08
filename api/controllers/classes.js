@@ -185,10 +185,6 @@ router.delete('/:clId/:id', passport.authenticate('jwt', { session: false }), as
       message: 'Xóa bài viết thành công',
       data: data
     }))
-    .catch(err => res.json({
-      statusCode: -1,
-      message: err.message,
-      data: 0
-    }));
+    .catch(res.onError);
 });
 module.exports = router;
