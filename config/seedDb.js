@@ -72,7 +72,7 @@ async function seedDb() {
                     req2.body.password = hash;
                     // Tạo mới 1 tài khoản
                     const newUser = new User({
-                        email: req2.body.email,
+                        gmail: req2.body.gmail,
                         password: req2.body.password,
                         name: req2.body.name,
                         isStaff: req2.body.isStaff,
@@ -85,7 +85,7 @@ async function seedDb() {
                     //         perm.users.unshift(user);
                     //         perm.save()
                     //     });
-                    console.log('Thêm dữ liệu mẫu 2 thành công');
+                    console.log('Thêm dữ liệu staff thành công');
                 }
             });
         });
