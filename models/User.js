@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 //Khai báo hàm Schema của mongoose ở trên
-const Schema  = mongoose.Schema;
+const Schema = mongoose.Schema;
 //Khởi tạo userSchema 
 const userSchema = new Schema({
     gmail: {
@@ -19,6 +19,10 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    isStaff: {
+        type: Boolean,
+        default: false
+    },
     isTeacher: {
         type: Boolean,
         default: false
@@ -27,7 +31,7 @@ const userSchema = new Schema({
         type: Boolean
     },
     avatar: {
-        type:String
+        type: String
     },
     posts: [
         {

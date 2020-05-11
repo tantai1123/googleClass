@@ -55,33 +55,53 @@
 
 - **/profile/education/:id** (delete 1 education) `<POST>`
 
-3. *Admin* (admin@gmail.com - admin1234)
-- **/admin/class/create**  `<POST>`
+3. *Staff* (staff@gmail.com - staff1234)
+- **/staff/class/create**  `<POST>`
 >name, description, startTime, endTime, time
 
+- **/staff/user/all**  `<GET>`
+
+- **/staff/class/all**  `<GET>`
+
+- **/staff/class/:clId**  `<GET>`
+>params: id class
+
+- **/staff/class/:classId/addteacher/:idTeacher**  `<POST>`
+>params: id class, id user
+
+- **/staff/class/:classId/addstudent/:idStudent**  `<POST>`
+>params: id class, id user
+
+- **/staff/class/:classId/members** `<POST>`
+>params: id class
+
+- **/staff/class/:clId/remove/:idUser** `<POST>`
+>params: id class, id user (student)
+
+- **/staff/class/:clId** `<DELETE>`
+>params: id class
+
+4. *Admin* (admin@gmail.com - admin1234)
 - **/admin/user/all**  `<GET>`
 
 - **/admin/profile/all**  `<GET>`
 
-- **/admin/class/all**  `<GET>`
+- **/admin/profile/:id**  `<GET>`
+>params: id user
 
-- **/admin/class/:classId/addteacher/:idTeacher**  `<POST>`
->params: id class, id user
+- **/admin/user/add** `<POST>`
+>name, gmail, password, isTeacher, isStaff
 
-- **/admin/class/:classId/addstudent/:idStudent**  `<POST>`
->params: id class, id user
+- **/admin/user/remove/:id** `<POST>`
+>params: id user
 
-- **/admin/class/:classId/members** `<POST>`
->params: id class
+- **/admin/changerole/teacher/:idTeacher** `<POST>`
+>params: id teacher
 
-- **/admin/class/:clId/remove/:idUser** `<POST>`
->params: id class, id user (student)
+- **/admin/changerole/staff/:idStaff** `<POST>`
+>params: id staff
 
-- **/admin/class/:clId** `<DELETE>`
->params: id class
-
-
-4. *Class*  
+5. *Class*  
 - **/classes**  `<GET>`
 
 - **/classes/:classId/members**  `<GET>`
@@ -98,7 +118,7 @@
 - **/classes/:clId/:id** `<DELETE>`
 >params: id class, id post
 
-5. *Comment*
+6. *Comment*
 - **/comments** `<POST>`
 >text, idPost
 - **/comments** `<DELETE>` (Xóa comment)

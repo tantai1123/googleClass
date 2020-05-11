@@ -4,7 +4,7 @@ const isEmpty = require('../utils/isEmpty');
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 async function seedDb() {
-    const checkUser = await User.findOne({name : 'Admin'});
+    const checkUser = await User.findOne({ name: 'Admin' });
     // const checkPerm = await Perm.find({});
     if (/*isEmpty(checkPerm) && */!(checkUser)) {
         // const perm_1 = new Perm({
@@ -23,13 +23,14 @@ async function seedDb() {
                 isAdmin: true
             }
         }
-        // const req2 = {
-        //     body: {
-        //         email: 'staff@gmail.com',
-        //         password: 'staff1234',
-        //         name: 'Staff'
-        //     }
-        // }
+        const req2 = {
+            body: {
+                email: 'staff@gmail.com',
+                password: 'staff1234',
+                name: 'Staff',
+                isStaff: true
+            }
+        }
         const avatar = gravatar.url(req.body.email, {
             s: '200', //size
             r: 'pg', //rating
@@ -51,7 +52,7 @@ async function seedDb() {
                         // permission: admin.name,
                         avatar
                     });
-                
+
                     user = await newUser.save();
                     // await Perm.findById(admin._id)
                     //     .then(perm => {
@@ -63,31 +64,31 @@ async function seedDb() {
             });
         });
         //-----
-        // bcrypt.genSalt(10, (err, salt) => {
-        //     bcrypt.hash(req2.body.password, salt, (err, hash) => {
-        //         seedUser2();
-        //         async function seedUser2() {
-        //             if (err) throw err;
-        //             req2.body.password = hash;
-        //             // Tạo mới 1 tài khoản
-        //             const newUser = new User({
-        //                 email: req2.body.email,
-        //                 password: req2.body.password,
-        //                 name: req2.body.name,
-        //                 permission: mod.name,
-        //                 avatar
-        //             });
-                    
-        //             user = await newUser.save();
-        //             await Perm.findById(mod._id)
-        //                 .then(perm => {
-        //                     perm.users.unshift(user);
-        //                     perm.save()
-        //                 });
-        //             console.log('Thêm dữ liệu mẫu 2 thành công');
-        //         }
-        //     });
-        // });
+        bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(req2.body.password, salt, (err, hash) => {
+                seedUser2();
+                async function seedUser2() {
+                    if (err) throw err;
+                    req2.body.password = hash;
+                    // Tạo mới 1 tài khoản
+                    const newUser = new User({
+                        email: req2.body.email,
+                        password: req2.body.password,
+                        name: req2.body.name,
+                        isStaff: req2.body.isStaff,
+                        avatar
+                    });
+
+                    user = await newUser.save();
+                    // await Perm.findById(mod._id)
+                    //     .then(perm => {
+                    //         perm.users.unshift(user);
+                    //         perm.save()
+                    //     });
+                    console.log('Thêm dữ liệu mẫu 2 thành công');
+                }
+            });
+        });
 
     } else {
         console.log('Còn tồn tại dữ liệu mẫu')
