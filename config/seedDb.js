@@ -25,13 +25,13 @@ async function seedDb() {
         }
         const req2 = {
             body: {
-                email: 'staff@gmail.com',
+                gmail: 'staff@gmail.com',
                 password: 'staff1234',
                 name: 'Staff',
                 isStaff: true
             }
         }
-        const avatar = gravatar.url(req.body.email, {
+        const avatar = gravatar.url(req.body.gmail, {
             s: '200', //size
             r: 'pg', //rating
             d: 'mm' //default
