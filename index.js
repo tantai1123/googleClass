@@ -9,6 +9,7 @@ const profile = require('./api/controllers/profile');
 const classes = require('./api/controllers/classes');
 const comments = require('./api/controllers/comments');
 const admin = require('./api/controllers/admin');
+const staff = require('./api/controllers/staff');
 var cors = require('cors')
 require('./config/seedDb');
 const app = express();
@@ -37,6 +38,7 @@ app.use('/profile', profile);
 app.use('/classes', classes);
 app.use('/comments', comments);
 app.use('/admin', admin);
+app.use('/staff', staff);
 
 const port = process.env.PORT || 1234;
 
