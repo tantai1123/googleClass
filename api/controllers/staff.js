@@ -190,7 +190,7 @@ router.get('/user/all', passport.authenticate('jwt', { session: false }), async 
     }
 });
 router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    async function addStudents(idSender, idReceiver) {
+    async function addStudents(idSender, idReceiver, data) {
         checkObjectId(idSender, idReceiver)
         const queryObject = {
             _id: idSender,

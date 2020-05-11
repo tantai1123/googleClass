@@ -113,7 +113,8 @@ router.post('/login', async (req, res) => {
                                         token: 'Bearer ' + token,
                                         data: {
                                             isAdmin: user.isAdmin,
-                                            isTeacher: user.isTeacher
+                                            isTeacher: user.isTeacher,
+                                            isStaff: user.isStaff
                                         }
                                     });
                                 }
