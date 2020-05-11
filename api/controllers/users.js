@@ -70,7 +70,7 @@ router.post('/register', (req, res) => {
                                         avatar: user.avatar,
                                         isTeacher: user.isTeacher
                                     }
-                                })); //thông báo
+                                })); 
                         });
                     });
                 }
@@ -103,7 +103,7 @@ router.post('/login', async (req, res) => {
                     //Kiểm tra mật khẩu
                     bcrypt.compare(password, user.password).then(isMatch => {
                         if (isMatch) {
-                            const payload = { id: user.id, name: user.name, avatar: user.avatar, perm: user.permission, isTeacher: user.isTeacher, isAdmin: user.isAdmin }; //Tạo jwt payload
+                            const payload = { id: user.id, name: user.name, avatar: user.avatar, perm: user.permission, isTeacher: user.isTeacher, isAdmin: user.isAdmin, isStaff: user.isStaff }; //Tạo jwt payload
                             //đăng nhập token, sau expiresIn mã sẽ hết hạn và phải đăng nhập lại
                             jwt.sign(payload, keys.secretOrKey, { expiresIn: '1 days' },
                                 (err, token) => {

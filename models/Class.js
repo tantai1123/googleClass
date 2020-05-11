@@ -44,8 +44,7 @@ const classSchema = new Schema({
     required: true
   },
   time: {
-    type: String,
-    required: true
+    type: String
   }
 })
 

@@ -49,10 +49,10 @@ router.get('/class/all', passport.authenticate('jwt', { session: false }), (req,
 });
 router.post('/class/create', passport.authenticate('jwt', { session: false }), async (req, res) => {
     User.findById(req.user.id).then(async user => {
-        if (!user.isAdmin) {
+        if (!user.isStaff) {
             return res.status(402).json({
                 statusCode: -1,
-                message: 'Bạn không phải là admin',
+                message: 'Bạn không phải là Staff',
                 data: 0
             });
         } else {
@@ -87,8 +87,8 @@ router.post('/class/create', passport.authenticate('jwt', { session: false }), a
     })
 });
 router.get('/class/:clId', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    await User.findById(req.params.id).then(async user => {
-        if (!user.isAdmin) {
+    await User.findById(req.user.id).then(async user => {
+        if (!user.isStaff) {
             return res.status(402).json({
                 statusCode: -1,
                 message: 'Bạn không có quyền',
@@ -132,7 +132,7 @@ router.get('/class/:clId', passport.authenticate('jwt', { session: false }), asy
 
 router.get('/class/:clId/members', passport.authenticate('jwt', { session: false }), async (req, res) => {
     await User.findById(req.user.id).then(async user => {
-        if (!user.isAdmin) {
+        if (!user.isStaff) {
             return res.status(402).json({
                 statusCode: -1,
                 message: 'Bạn không có quyền',
@@ -162,7 +162,7 @@ router.get('/class/:clId/members', passport.authenticate('jwt', { session: false
 });
 router.get('/user/all', passport.authenticate('jwt', { session: false }), async (req, res) => {
     let result = [];
-    if (req.user.isAdmin) {
+    if (req.user.isStaff) {
         await User.find()
             .sort({ gmail: -1 })
             .then(users => {
@@ -190,7 +190,7 @@ router.get('/user/all', passport.authenticate('jwt', { session: false }), async 
     }
 });
 router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    async function addStudents(idSender, idReceiver, data) {
+    async function addStudents(idSender, idReceiver) {
         checkObjectId(idSender, idReceiver)
         const queryObject = {
             _id: idSender,

@@ -8,6 +8,7 @@ module.exports = function ValidateRegisterInput(data){
   data.gmail = !isEmpty(data.gmail) ? data.gmail : '';
   data.password = !isEmpty(data.password) ? data.password : '';
   data.passwordCfm = !isEmpty(data.passwordCfm) ? data.passwordCfm : '';
+  data.secretCode = !isEmpty(data.secretCode) ? data.secretCode : '';
 
   if(!Validator.isLength(data.name, {min: 3, max: 20})){
     errors.name ='Tên phải có độ dài từ 3 đến 20 ký tự';
@@ -33,7 +34,11 @@ module.exports = function ValidateRegisterInput(data){
   if(!Validator.equals(data.password, data.passwordCfm)){
     errors.passwordCfm ='Mật khẩu không trùng khớp';
   }
-  
+  if (!isEmpty(data.secretCode)) {
+    if (!Validator.equals(data.secretCode, 'secretcode123')) {
+      errors.secretCode = 'Sai mã xác nhận';
+    }
+  }
 
   return {
     errors,
