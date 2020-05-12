@@ -101,7 +101,7 @@ idUser (array id sinh viên)
 - **/admin/user/add** `<POST>`
 >name, gmail, password, isTeacher, isStaff
 
-- **/admin/user/remove/:id** `<POST>`
+- **/admin/user/remove/:id** `<DELETE>`
 >params: id user
 
 - **/admin/changerole/teacher/:idTeacher** `<POST>`
@@ -110,6 +110,8 @@ idUser (array id sinh viên)
 - **/admin/changerole/staff/:idStaff** `<POST>`
 >params: id staff
 
+- **/admin/changerole/staff/:idStudent** `<POST>`
+>params: id student
 5. *Class*  
 - **/classes**  `<GET>`
 

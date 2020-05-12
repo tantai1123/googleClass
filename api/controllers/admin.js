@@ -21,16 +21,29 @@ const { MyError } = require('../../utils/myError');
 router.get('/user/all', passport.authenticate('jwt', { session: false }), async (req, res) => {
     async function AllUser(idAdmin) {
         checkObjectId(idAdmin);
-        const admin = User.findById(idAdmin);
+        const admin = await User.findById(idAdmin);
         if (!admin) throw new MyError('Không tìm thấy người dùng', 404);
-        if (admin.isAdmin == false) throw new MyError('Không có quyền', 401);
+        if (!admin.isAdmin) throw new MyError('Không có quyền', 401);
         return User.find();
     }
+    let result = [];
     AllUser(req.user.id)
-        .then(users => res.send({
-            message: 'Thành công',
-            data: users
-        }))
+        .then(users => {
+            for (const user of users) {
+                result.push({
+                    id: user.id,
+                    gmail: user.gmail,
+                    name: user.name,
+                    isTeacher: user.isTeacher,
+                    isStaff: user.isStaff,
+                    classes: user.classes
+                })
+            }
+            return res.send({
+                message: 'Danh sách người dùng',
+                data: result
+            })
+        })
         .catch(res.onError);
 });
 router.get('/profile/all', passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -103,7 +116,7 @@ router.post('/changerole/teacher/:idTeacher', passport.authenticate('jwt', { ses
     async function changeRoleUserTeacher(idUser, idTeacher) {
         checkObjectId(idUser, idTeacher);
         const isAdmin = User.findById(idUser);
-        if (isAdmin.isAdmin = false) throw new MyError('Không có quyền');
+        if (isAdmin.isAdmin = false) throw new MyError('Không có quyền', 401);
         const queryObjectTeacher = {
             _id: idTeacher,
             isTeacher: false
@@ -111,14 +124,25 @@ router.post('/changerole/teacher/:idTeacher', passport.authenticate('jwt', { ses
         const updateObjectTeacher = {
             $set: { isTeacher: true, isStaff: false }
         }
-        const teacher = User.findOneAndUpdate(queryObjectTeacher, updateObjectTeacher);
-        if (!teacher) throw new MyError('User này đã là giáo viên');
-        return teacher;
+        const teacher = await User.findOneAndUpdate(queryObjectTeacher, updateObjectTeacher);
+        if (!teacher) throw new MyError('User này đã là giáo viên', 402);
+        const userInfo = teacher.toObject();
+        delete userInfo.password;
+        return userInfo;
     }
-    changeRoleUserTeacher(req.user.id, req.params.id)
+    changeRoleUserTeacher(req.user.id, req.params.idTeacher)
         .then(teacher => res.send({
             message: 'thành công',
-            data: teacher
+            data: {
+                _id: teacher.id,
+                isAdmin: teacher.isAdmin,
+                isStaff: teacher.isStaff,
+                isTeacher: teacher.isTeacher,
+                classes: teacher.classes,
+                gmail: teacher.gmail,
+                name: teacher.name,
+                avatar: teacher.avatar
+            }
         }))
         .catch(res.onError)
 });
@@ -127,22 +151,55 @@ router.post('/changerole/staff/:idStaff', passport.authenticate('jwt', { session
     async function changeRoleUserStaff(idUser, idStaff) {
         checkObjectId(idUser, idStaff);
         const isAdmin = User.findById(idUser);
-        if (isAdmin.isAdmin = false) throw new MyError('Không có quyền');
+        if (isAdmin.isAdmin = false) throw new MyError('Không có quyền', 401);
         const queryObjectStaff = {
             _id: idStaff,
-            idStaff: false
+            isStaff: false
         }
         const updateObjectStaff = {
-            $set: { idStaff: true, idTeacher: false }
+            $set: { isStaff: true, isTeacher: false }
         }
-        const staff = User.findOneAndUpdate(queryObjectStaff, updateObjectStaff);
-        if (!staff) throw new MyError('User này đã là Staff');
-        return staff;
+        const staff = await User.findOneAndUpdate(queryObjectStaff, updateObjectStaff);
+        if (!staff) throw new MyError('User này đã là Staff', 402);
+        return staff
     }
-    changeRoleUserStaff(req.user.id, req.params.id)
+    changeRoleUserStaff(req.user.id, req.params.idStaff)
         .then(staff => res.send({
             message: 'thành công',
-            data: staff
+            data: {
+                _id: staff.id,
+                isAdmin: staff.isAdmin,
+                isStaff: staff.isStaff,
+                isTeacher: staff.isTeacher,
+                classes: staff.classes,
+                gmail: staff.gmail,
+                name: staff.name,
+                avatar: staff.avatar
+            }
+        }))
+        .catch(res.onError)
+});
+
+router.post('/changerole/student/:idStudent', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    async function changeRoleUserStudent(idUser, idStudent) {
+        checkObjectId(idUser, idStudent);
+        const isAdmin = User.findById(idUser);
+        if (isAdmin.isAdmin = false) throw new MyError('Không có quyền', 401);
+        const queryObjectStaff = {
+            _id: idStudent,
+            $or: [{ isStaff: true }, { isTeacher: true }]
+        }
+        const updateObjectStaff = {
+            $set: { isTeacher: false, isStaff: false }
+        }
+        const student = await User.findOneAndUpdate(queryObjectStaff, updateObjectStaff);
+        if (!student) throw new MyError('User này đã là Student', 402);
+        return student;
+    }
+    changeRoleUserStudent(req.user.id, req.params.idStudent)
+        .then(student => res.send({
+            message: 'thành công',
+            data: student
         }))
         .catch(res.onError)
 });

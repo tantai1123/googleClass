@@ -171,7 +171,8 @@ router.get('/user/all', passport.authenticate('jwt', { session: false }), async 
                         id: user.id,
                         gmail: user.gmail,
                         name: user.name,
-                        isTeacher: user.isTeacher
+                        isTeacher: user.isTeacher,
+                        classes: user.classes
                     })
                 }
                 return res.json({
