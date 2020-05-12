@@ -47,6 +47,7 @@
 
 - **/profile/user/:name**  `<GET>`
 >params: user name
+
 - **/profile**  `<POST>`
 >fullname, maso, facebook, zalo, twitter, instagram
 
@@ -61,6 +62,10 @@
 
 - **/staff/user/all**  `<GET>`
 
+- **/staff/:clId/user/allteachers**  `<GET>` (lấy danh sách giáo viên chưa tham gia lớp)
+
+- **/staff/:clId/user/allstudents**  `<GET>` (lấy danh sách sinh viên chưa tham gia lớp)
+
 - **/staff/class/all**  `<GET>`
 
 - **/staff/class/:clId**  `<GET>`
@@ -71,6 +76,10 @@
 
 - **/staff/class/:classId/addstudent/:idStudent**  `<POST>`
 >params: id class, id user
+
+- **/staff/class/:classId/addstudents**  `<POST>`
+>params: id class
+idUser (array id sinh viên)
 
 - **/staff/class/:classId/members** `<POST>`
 >params: id class

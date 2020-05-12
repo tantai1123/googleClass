@@ -18,7 +18,7 @@ router.get('/class/all', passport.authenticate('jwt', { session: false }), (req,
     let result = [];
     User.findById(req.user.id)
         .then(user => {
-            if (!user.isStaff == false) {
+            if (!user.isStaff) {
                 return res.json({
                     statusCode: -1,
                     message: 'Bạn không có quyền',
@@ -189,9 +189,69 @@ router.get('/user/all', passport.authenticate('jwt', { session: false }), async 
         })
     }
 });
+router.get('/:clId/user/allstudents', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let result = [];
+    if (req.user.isStaff) {
+        await User.find({ isTeacher: false, isStaff: false, isAdmin: false, classes: { $ne: req.params.clId } })
+            .sort({ gmail: -1 })
+            .then(users => {
+                for (const user of users) {
+                    result.push({
+                        id: user.id,
+                        gmail: user.gmail,
+                        name: user.name,
+                        isTeacher: user.isTeacher
+                    })
+                }
+                return res.json({
+                    statusCode: 1,
+                    message: 'Danh sách sinh viên',
+                    data: result
+                })
+            })
+            .catch(err => res.status(404).json({ noUser: 'Không tìm thấy người dùng nào' }));
+    } else {
+        return res.json({
+            statusCode: -1,
+            message: 'Bạn không có quyền',
+            data: 0
+        })
+    }
+});
+router.get('/"clId/user/allteachers', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    let result = [];
+    if (req.user.isStaff) {
+        await User.find({ isTeacher: true, classes: { $ne: clId } })
+            .sort({ gmail: -1 })
+            .then(users => {
+                for (const user of users) {
+                    result.push({
+                        id: user.id,
+                        gmail: user.gmail,
+                        name: user.name,
+                        isTeacher: user.isTeacher
+                    })
+                }
+                return res.json({
+                    statusCode: 1,
+                    message: 'Danh sách giáo viên',
+                    data: result
+                })
+            })
+            .catch(err => res.status(404).json({ noUser: 'Không tìm thấy người dùng nào' }));
+    } else {
+        return res.json({
+            statusCode: -1,
+            message: 'Bạn không có quyền',
+            data: 0
+        })
+    }
+});
 router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    async function addStudents(idSender, idReceiver) {
-        checkObjectId(idSender, idReceiver)
+    async function addStudents(idSender, idReceiver, idStaff) {
+        checkObjectId(idSender, idReceiver, idStaff)
+        const staff = await User.findById(idStaff);
+        if (!staff.isStaff) throw new MyError('Không có quyền', 401);
         const queryObject = {
             _id: idSender,
             classes: { $ne: idReceiver },
@@ -216,7 +276,7 @@ router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { se
                 data: 0
             })
         } else {
-            addStudents(req.params.idUser, req.params.clId)
+            addStudents(req.params.idUser, req.params.clId, req.user.id)
                 .then(data => res.json({
                     statusCode: 1,
                     message: 'Thêm sinh viên thành công',
@@ -226,17 +286,15 @@ router.post('/class/:clId/addstudent/:idUser', passport.authenticate('jwt', { se
                         gmail: data.gmail
                     }
                 }))
-                .catch(err => res.json({
-                    statusCode: -1,
-                    message: err.message,
-                    data: 0
-                }));
+                .catch(res.onError);
         }
     })
 });
 router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    async function addTeacher(idSender, idReceiver) {
+    async function addTeacher(idSender, idReceiver, idStaff) {
         checkObjectId(idSender, idReceiver)
+        const staff = await User.findById(idStaff);
+        if (!staff.isStaff) throw new MyError('Không có quyền', 401);
         const queryObject = {
             _id: idSender,
             classes: { $ne: idReceiver },
@@ -264,7 +322,7 @@ router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { se
                 data: 0
             })
         } else {
-            addTeacher(req.params.idUser, req.params.clId)
+            addTeacher(req.params.idUser, req.params.clId, req.user.id)
                 .then(data => res.json({
                     statusCode: 1,
                     message: 'Thêm giảng viên thành công',
@@ -335,10 +393,52 @@ router.delete('/class/:clId', passport.authenticate('jwt', { session: false }), 
         return classs;
     }
     removeClass(req.params.clId, req.user.id)
-    .then(classs => res.send({
-        statusCode: 1,
-        message: 'Xóa thành công'
-    }))
-    .catch(res.onError);
+        .then(classs => res.send({
+            statusCode: 1,
+            message: 'Xóa thành công'
+        }))
+        .catch(res.onError);
 });
+
+router.post('/class/:clId/addstudents', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    async function addStudents(idSender, idStaff, data) {
+        checkObjectId(idSender, idStaff)
+        const staff = await User.findById(idStaff);
+        if (!staff.isStaff) throw new MyError('Không có quyền', 401);
+        var array = {};
+        if (typeof data.idUser !== 'undefined') {
+            array.idUser = (data.idUser.split(','));
+        }
+
+        const queryObject = {
+            _id: idSender,
+            members: { $nin: array.idUser },
+            students: { $nin: array.idUser }
+        };
+        const options = {
+            new: true,
+            fields: { name: 1 }
+        };
+        const updateObject = { $push: { students: { $each: array.idUser }, members: { $each: array.idUser } } };
+        const receiver = await Class.findOneAndUpdate(queryObject, updateObject, options);
+        if (!receiver) throw new MyError('Học sinh này đã tham gia rồi', 404);
+        await array.idUser.forEach(async element => {
+            console.log(element);
+            await User.findByIdAndUpdate(element, { $push: { classes: idSender } })
+        });
+        return receiver;
+    }
+    addStudents(req.params.clId, req.user.id, req.body)
+        .then(data => res.json({
+            statusCode: 1,
+            message: 'Thêm sinh viên thành công',
+            data: {
+                id: data._id,
+                name: data.name,
+                gmail: data.gmail
+            }
+        }))
+        .catch(res.onError);
+});
+
 module.exports = router;
