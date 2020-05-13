@@ -380,17 +380,21 @@ router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { sessio
     })
 });
 router.delete('/class/:clId', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    async function removeClass(idClass, idAdmin) {
-        checkObjectId(idClass, idAdmin)
+    async function removeClass(idClass, idStaff) {
+        checkObjectId(idClass, idStaff)
         const queryObject = {
-            _id: idAdmin,
-            isAdmin: true,
+            _id: idStaff,
+            isStaff: true,
         }
         const admin = await User.findOne(queryObject);
         if (!admin) throw new MyError('Không có quyền', 404);
 
         const classs = await Class.findByIdAndRemove(idClass);
         if (!classs) throw new MyError('Không tìm thấy lớp này', 404);
+        const array = classs.members
+        await array.forEach(async element => {
+            await User.findByIdAndUpdate(element, { $pull: { classes: idClass } })
+        });
         return classs;
     }
     removeClass(req.params.clId, req.user.id)
