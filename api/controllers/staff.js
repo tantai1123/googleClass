@@ -356,7 +356,7 @@ router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { sessio
         if (!sender) throw new MyError('Không tìm thấy người dùng', 404);
 
         const updateObject = {
-            $pull: { members: idSender }
+            $pull: { members: idSender, students: idSender }
         };
         const receiver = await Class.findByIdAndUpdate(idReceiver, updateObject);
         if (!receiver) throw new MyError('Không tìm thấy lớp này', 404);
