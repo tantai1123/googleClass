@@ -96,7 +96,7 @@ idUser (array id sinh viên)
 - **/admin/profile/all**  `<GET>`
 
 - **/admin/profile/:id**  `<GET>`
->params: id user
+>params: id profile
 
 - **/admin/user/add** `<POST>`
 >name, gmail, password, isTeacher, isStaff

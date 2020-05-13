@@ -36,6 +36,7 @@ router.get('/user/all', passport.authenticate('jwt', { session: false }), async 
                     name: user.name,
                     isTeacher: user.isTeacher,
                     isStaff: user.isStaff,
+                    isAdmin: user.isAdmin,
                     classes: user.classes
                 })
             }
