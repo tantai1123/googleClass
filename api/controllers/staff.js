@@ -344,14 +344,16 @@ router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { se
     })
 });
 router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    async function removeStudent(idSender, idReceiver) {
-        checkObjectId(idSender, idReceiver)
+    async function removeStudent(idSender, idReceiver, idStaff) {
+        checkObjectId(idSender, idReceiver);
+        const staff = await User.findById(idStaff);
+        if (!staff.isStaff) throw new MyError('Không có quyền', 401);
         const queryObject = {
             _id: idSender,
-            classes: { $ne: idReceiver },
+            classes: { $eq: idReceiver },
         }
         const sender = await User.findOneAndUpdate(queryObject, { $pull: { classes: idReceiver } });
-        if (!sender) throw new MyError('Giảng viên này đã được thêm', 404);
+        if (!sender) throw new MyError('Không tìm thấy người dùng', 404);
 
         const updateObject = {
             $pull: { members: idSender }
@@ -360,26 +362,16 @@ router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { sessio
         if (!receiver) throw new MyError('Không tìm thấy lớp này', 404);
         return sender;
     }
-    await User.findById(req.params.idUser).then(user => {
-        if (!user.isAdmin) {
-            return res.json({
-                statusCode: -1,
-                message: 'Không có quyền',
-                data: 0
-            })
-        } else {
-            removeStudent(req.params.idUser, req.params.clId)
-                .then(data => res.json({
-                    statusCode: 1,
-                    message: 'Xóa sinh viên thành công',
-                    data: {
-                        id: data._id,
-                        name: data.name,
-                    }
-                }))
-                .catch(res.onError);
-        }
-    })
+    removeStudent(req.params.idUser, req.params.clId, req.user.id)
+        .then(data => res.json({
+            statusCode: 1,
+            message: 'Xóa sinh viên thành công',
+            data: {
+                id: data._id,
+                name: data.name,
+            }
+        }))
+        .catch(res.onError);
 });
 router.delete('/class/:clId', passport.authenticate('jwt', { session: false }), async (req, res) => {
     async function removeClass(idClass, idStaff) {
