@@ -219,7 +219,7 @@ router.get('/:clId/user/allstudents', passport.authenticate('jwt', { session: fa
         })
     }
 });
-router.get('/":clId/user/allteachers', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.get('/:clId/user/allteachers', passport.authenticate('jwt', { session: false }), async (req, res) => {
     let result = [];
     if (req.user.isStaff) {
         await User.find({ isTeacher: true, classes: { $ne: req.params.clId } })
