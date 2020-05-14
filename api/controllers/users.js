@@ -118,7 +118,6 @@ router.post('/changepassword', password.authenticate('jwt', { session: false }),
                     })
                 } else {
                     return res.status(400).json({
-                        statusCode: -1,
                         message: 'Sai mật khẩu cũ',
                         data: 0
                     });
@@ -201,7 +200,6 @@ router.get('/reset/:token', async (req, res) => {
                 data: { token: req.params.token }
             });
         }
-
     });
 });
 router.post('/reset/:token', function (req, res) {
@@ -275,7 +273,10 @@ router.get('/current', password.authenticate('jwt', { session: false }), (req, r
         id: req.user.id,
         name: req.user.name,
         gmail: req.user.gmail,
-        avatar: req.user.avatar
+        avatar: req.user.avatar,
+        isAdmin: req.user.isAdmin,
+        isTeacher: req.user.isTeacher,
+        isStaff: req.user.isStaff
     });
 });
 

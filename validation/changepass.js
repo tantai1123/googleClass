@@ -6,7 +6,11 @@ module.exports = function ValidatePasswordInput(data){
 
   data.newPassword = !isEmpty(data.newPassword) ? data.newPassword : '';
   data.passwordCfm = !isEmpty(data.passwordCfm) ? data.passwordCfm : '';
+  data.oldPassword = !isEmpty(data.oldPassword) ? data.oldPassword : '';
 
+  if(Validator.isEmpty(data.oldPassword)){
+    errors.oldPassword ='Mật khẩu cũ không được để trống';
+  }
   if(!Validator.isLength(data.newPassword, {min: 8, max: 30})){
     errors.newPassword ='Mật khẩu phải có độ dài từ 8 đến 30 ký tự';
   }
