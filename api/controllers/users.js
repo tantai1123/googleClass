@@ -2,15 +2,14 @@ const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const keys = require('../../config/keys');
 const password = require('passport');
 const crypto = require('crypto');
 const Async = require('async');
 var nodemailer = require("nodemailer");
+const { hash, compare } = require('bcryptjs');
+const { sign } = require('../../config/jwt');
 
-// const checkPerm = require('../../config/checkPerm');
-
+const { MyError } = require('../../utils/myError');
 //
 const validateRegisterInput = require('../../validation/register');
 const validateLoginInput = require('../../validation/login');
@@ -22,115 +21,71 @@ const User = require('../../models/User');
 const adminMail = require('../../config/adminMail');
 
 router.post('/register', (req, res) => {
+
+    async function register(data) {
+        const { name, gmail, password, secretCode } = data;
+        const findUser = await User.findOne({ name: name });
+        if (findUser) throw new MyError('Tên đăng nhập đã được sử dụng', 400);
+        const findEmail = await User.findOne({ gmail: gmail });
+        if (findEmail) throw new MyError('Gmail đã được sử dụng', 400);
+        if (secretCode == 'secretcode123') var isTeacher = true;
+        const hashPassword = await hash(password, 8);
+        const avatar = gravatar.url(gmail, {
+            s: '200', //size
+            r: 'pg', //rating
+            d: 'mm' //default
+        });
+        const user = new User({ name, gmail, password: hashPassword, avatar, isTeacher: isTeacher });
+        await user.save();
+        const userInfo = user.toObject();
+        delete userInfo.password;
+        //Profile
+        const profile = new Profile({ user: userInfo._id, name: userInfo.name });
+        await profile.save();
+        return userInfo;
+    }
     const { errors, isValid } = validateRegisterInput(req.body);
     if (!isValid) {
         return res.status(400).json(errors);
     }
-    User.findOne({ gmail: req.body.gmail }).then(user => {
-        if (user) {
-            return res.status(400).json({
-                stastatusCodetus: -1,
-                message: 'Gmail đã được sử dụng, hãy chọn gmail khác',
-                data: 0
-            });
-        } else {
-            User.findOne({ name: req.body.name }).then(user => {
-                if (user) {
-                    return res.status(400).json({
-                        statusCode: -1,
-                        message: 'Nickname này đã được sử dụng, hãy chọn một tên khác',
-                        data: 0
-                    });
-                } else {
-                    const avatar = gravatar.url(req.body.gmail, {
-                        s: '100', //size
-                        // r: 'pg', //rating
-                        // d: 'mm' //default
-                    });
-                    // Mã hóa       
-                    bcrypt.genSalt(10, (err, salt) => {
-                        bcrypt.hash(req.body.password, salt, (err, hash) => {
-                            if (err) throw err;
-                            req.body.password = hash;
-                            // Tạo mới 1 tài khoản
-                            var newUser = new User({
-                                gmail: req.body.gmail,
-                                password: req.body.password,
-                                name: req.body.name,
-                                avatar,
-                            });
-                            if (req.body.secretCode === 'secretcode123') { newUser.isTeacher = true };
-                            newUser.save()
-                                .then(user => res.json({
-                                    statusCode: 1,
-                                    message: 'Tạo mới thành công',
-                                    data: {
-                                        gmail: user.gmail,
-                                        name: user.name,
-                                        avatar: user.avatar,
-                                        isTeacher: user.isTeacher
-                                    }
-                                })); 
-                        });
-                    });
-                }
-            });
-        };
-    });
+    register(req.body)
+        .then(user => res.send({
+            message: 'Đăng ký thành công',
+            data: {
+                name: user.name,
+                gmail: user.gmail,
+                avatar: user.avatar,
+                isTeacher: user.isTeacher,
+                isAdmin: user.isAdmin,
+                isStaff: user.isStaff
+            }
+        }))
+        .catch(res.onError);
 });
 router.post('/login', async (req, res) => {
-    const name = req.body.name;
-    const password = req.body.password;
     const { errors, isValid } = validateLoginInput(req.body);
-
     if (!isValid) {
         return res.status(400).json(errors);
     }
-
+    async function logIn(name, password) {
+        const user = await User.findOne({ name });
+        if (!user) throw new MyError('Tài khoản không tồn tại', 404);
+        const isMatch = await compare(password, user.password);
+        if (!isMatch) throw new MyError('Sai mật khẩu', 404);
+        const payload = { id: user.id, name: user.name, avatar: user.avatar, perm: user.permission, isTeacher: user.isTeacher, isAdmin: user.isAdmin, isStaff: user.isStaff }
+        const token = await sign(payload);
+        return { token, payload };
+    }
     //Tìm tài khoản qua gmail
-    await User.findOne({ name }).then(user => {
-        //Kiểm tra name
-        if (!user) {
-            return res.status(404).json({
-                statusCode: -1,
-                message: 'Tài khoản không tồn tại',
-                data: 0
-            });
-        }
-        else {
-            User.findOne({ name }).then(user => {
-                if (user) {
-                    //Kiểm tra mật khẩu
-                    bcrypt.compare(password, user.password).then(isMatch => {
-                        if (isMatch) {
-                            const payload = { id: user.id, name: user.name, avatar: user.avatar, perm: user.permission, isTeacher: user.isTeacher, isAdmin: user.isAdmin, isStaff: user.isStaff }; //Tạo jwt payload
-                            //đăng nhập token, sau expiresIn mã sẽ hết hạn và phải đăng nhập lại
-                            jwt.sign(payload, keys.secretOrKey, { expiresIn: '1 days' },
-                                (err, token) => {
-                                    res.json({
-                                        statusCode: 1,
-                                        message: 'Đăng nhập thành công',
-                                        token: 'Bearer ' + token,
-                                        data: {
-                                            isAdmin: user.isAdmin,
-                                            isTeacher: user.isTeacher,
-                                            isStaff: user.isStaff
-                                        }
-                                    });
-                                }
-                            );
-                        } else {
-                            return res.status(400).json({
-                                statusCode: -1,
-                                message: 'Sai mật khẩu',
-                                data: 0
-                            });
-                        }
-                    });
-                }
-            })
-        }
-    });
+    logIn(req.body.name, req.body.password)
+        .then(user => res.send({
+            message: 'Đăng nhập thành công',
+            token: 'Bearer ' + user.token,
+            isAdmin: user.payload.isAdmin,
+            isStaff: user.payload.isStaff,
+            isTeacher: user.payload.isTeacher
+        }))
+        .catch(res.onError);
 });
 router.post('/changepassword', password.authenticate('jwt', { session: false }), async (req, res) => {
     const { errors, isValid } = ValidatePasswordInput(req.body);
@@ -188,7 +143,7 @@ router.post('/forgot', function (req, res, next) {
                     })
                 } else {
                     user.resetPasswordToken = token;
-                    user.resetPasswordExpires = Date.now() + 600000; // 10 min
+                    user.resetPasswordExpires = Date.now() + 300000; // 5 min
 
                     user.save(function (err) {
                         done(err, token, user);
@@ -223,7 +178,7 @@ router.post('/forgot', function (req, res, next) {
                 console.log('mail sent');
                 res.json({
                     statusCode: 1,
-                    message: 'Đã gửi mail tới ' + user.gmail,
+                    message: 'Đã gửi gmail tới ' + user.gmail,
                 })
             });
         }
@@ -266,9 +221,9 @@ router.post('/reset/:token', function (req, res) {
                             bcrypt.hash(req.body.newPassword, salt, async (err, hash) => {
                                 if (err) throw err;
                                 req.body.newPassword = hash;
-                                await User.findOneAndUpdate({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, { $set: { password: req.body.newPassword } });
+                                await User.findOneAndUpdate({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, { $set: { password: req.body.newPassword, resetPasswordExpires: Date.now() } });
+                                done(err, user);
                                 return res.status(400).json({
-                                    statusCode: 1,
                                     message: 'Thay đổi mật khẩu thành công, mời đăng nhập lại!',
                                     data: 0
                                 });
@@ -280,20 +235,27 @@ router.post('/reset/:token', function (req, res) {
         },
         function (user, done) {
             var smtpTransport = nodemailer.createTransport({
-                service: 'Gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true,
                 auth: {
                     user: adminMail.user,
                     pass: adminMail.pass
+                },
+                tls: {
+                    // do not fail on invalid certs
+                    rejectUnauthorized: false
                 }
             });
             var mailOptions = {
-                to: user.email,
+                to: user.gmail,
                 from: adminMail.user,
                 subject: 'Mật khẩu của bạn đã được thay đổi',
                 text: 'Chao xìn,\n\n' +
-                    'Đây là thư xác nhận rằng tài khoản ' + user.email + ' của bạn vừa được đổi mật khẩu.\n'
+                    'Đây là thư xác nhận rằng tài khoản liên kết đến ' + user.gmail + ' của bạn vừa được đổi mật khẩu.\n'
             };
             smtpTransport.sendMail(mailOptions, function (err) {
+                console.log('Confirmation mail has been sent');
                 res.json({
                     statusCode: 1,
                     message: 'Thay đổi password thành công'

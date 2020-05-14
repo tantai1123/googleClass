@@ -7,11 +7,9 @@ const profileSchema = new Schema({
   },
   fullname: {
     type: String,
-    required: true
   },
   maso:{
     type: Number,
-    required: true
   },
   //các liên kết đến mạng xã hội
   social: {

@@ -36,7 +36,7 @@
 - **/users/forgot**  `<POST>` (cái này register và login bằng gmail thật, r post forgot để nhận mail)
 >gmail
 
-- **/users/reset/:token**  `<POST,GET>` (token được gửi trong mail)
+- **/users/reset/:token**  `<POST,GET>` (token được gửi trong mail, có thời hạn trong 5p)
 >newPassword, passwordCfm
 - **/users/current**  `<GET>`
 
