@@ -86,7 +86,6 @@ router.post('/login', async (req, res) => {
                 isStaff: user.payload.isStaff,
                 isTeacher: user.payload.isTeacher
             }
-
         }))
         .catch(res.onError);
 });
@@ -198,9 +197,8 @@ router.get('/reset/:token', async (req, res) => {
             })
         } else {
             return res.json({
-                statusCode: 1,
                 message: 'Trang này thay đổi mật khẩu',
-                data: req.params.token
+                data: { token: req.params.token }
             });
         }
 
