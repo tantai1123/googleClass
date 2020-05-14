@@ -216,7 +216,7 @@ router.post('/forgot', function (req, res, next) {
                 subject: 'Yêu cầu thay đổi mật khẩu từ website gì gì đó',
                 text: 'Bạn nhận được thư này vì bạn (hoặc ai đó) đã yêu cầu thay đổi password tài khoản của bạn.\n\n' +
                     'Hãy nhấn vào link đính kèm, hoặc paste nó vào trình duyệt:\n\n' +
-                    'http://' + req.headers.host + '/users/reset/' + token + '\n\n' +
+                    'http://' + 'localhost:3000' + '/users/reset/' + token + '\n\n' +
                     'Nếu bạn không yêu cầu việc này thì bỏ qua thư này nhé!! ~Thân~.\n'
             };
             smtpTransport.sendMail(mailOptions, function (err) {
@@ -241,8 +241,9 @@ router.get('/reset/:token', async (req, res) => {
         } else {
             return res.json({
                 statusCode: 1,
-                message: 'Trang này thay đổi mật khẩu'
-            })
+                message: 'Trang này thay đổi mật khẩu',
+                data: req.params.token
+            });
         }
 
     });
