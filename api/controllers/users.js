@@ -81,9 +81,12 @@ router.post('/login', async (req, res) => {
         .then(user => res.send({
             message: 'Đăng nhập thành công',
             token: 'Bearer ' + user.token,
-            isAdmin: user.payload.isAdmin,
-            isStaff: user.payload.isStaff,
-            isTeacher: user.payload.isTeacher
+            data: {
+                isAdmin: user.payload.isAdmin,
+                isStaff: user.payload.isStaff,
+                isTeacher: user.payload.isTeacher
+            }
+
         }))
         .catch(res.onError);
 });
