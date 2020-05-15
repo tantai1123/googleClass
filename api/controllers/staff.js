@@ -149,6 +149,7 @@ router.get('/class/:clId/members', passport.authenticate('jwt', { session: false
                         data: {
                             students: classs.students,
                             teacher: classs.teacher,
+                            members: classs.members
                         }
                     })
                 })
@@ -303,7 +304,10 @@ router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { se
             classes: { $ne: idReceiver },
         }
         const sender = await User.findOneAndUpdate(queryObject, { $push: { classes: idReceiver } });
-        if (!sender) throw new MyError('Giảng viên này đã được thêm', 404);
+        if (!sender) throw new MyError('Giảng viên này đã được thêm trước đó', 404);
+
+        const classs = await Class.findById(idReceiver);
+        console.log(classs.teacher)
 
         const options = {
             new: true,
@@ -313,6 +317,8 @@ router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { se
             $set: { teacher: idSender },
             $push: { members: idSender }
         };
+        await User.findByIdAndUpdate(classs.teacher, { $pull: { classes: idReceiver } });
+        await Class.findByIdAndUpdate(idReceiver, { $pull: { members: classs.teacher } });
         const receiver = await Class.findByIdAndUpdate(idReceiver, updateObject, options);
         if (!receiver) throw new MyError('Không tìm thấy lớp này', 404);
         return sender;
@@ -335,11 +341,7 @@ router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { se
                         gmail: data.gmail
                     }
                 }))
-                .catch(err => res.json({
-                    statusCode: -1,
-                    message: err.message,
-                    data: 0
-                }));
+                .catch(res.onError);
         }
     })
 });
