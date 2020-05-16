@@ -17,8 +17,6 @@ const ValidatePasswordInput = require('../../validation/changepass');
 
 //
 const User = require('../../models/User');
-//thông tin mail admin
-const adminMail = require('../../config/adminMail');
 
 router.post('/register', (req, res) => {
 
