@@ -11,7 +11,7 @@ const comments = require('./api/controllers/comments');
 const admin = require('./api/controllers/admin');
 const staff = require('./api/controllers/staff');
 var cors = require('cors')
-//require('./config/seedDb');
+require('./config/seedDb');
 const app = express();
 app.use((req, res, next) => {
     res.onError = function (error) {
