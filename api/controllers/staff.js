@@ -358,16 +358,17 @@ router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { sessio
         if (!sender) throw new MyError('Không tìm thấy người dùng', 404);
 
         const updateObject = {
-            $pull: { members: idSender, students: idSender, teacher: idSender }
+            $pull: { members: idSender, students: idSender},
+            $unset: {teacher: ""}
         };
         const receiver = await Class.findByIdAndUpdate(idReceiver, updateObject);
         if (!receiver) throw new MyError('Không tìm thấy lớp này', 404);
         return sender;
     }
     removeUser(req.params.idUser, req.params.clId, req.user.id)
-        .then(data => res.json({
-            statusCode: 1,
-            message: 'Xóa sinh viên thành công',
+        .then(data => res.send({
+            success: true,
+            message: 'Xóa thành công',
             data: {
                 id: data._id,
                 name: data.name,
@@ -395,7 +396,7 @@ router.delete('/class/:clId', passport.authenticate('jwt', { session: false }), 
     }
     removeClass(req.params.clId, req.user.id)
         .then(classs => res.send({
-            statusCode: 1,
+            success: true,
             message: 'Xóa thành công'
         }))
         .catch(res.onError);
@@ -431,7 +432,7 @@ router.post('/class/:clId/addstudents', passport.authenticate('jwt', { session: 
     }
     addStudents(req.params.clId, req.user.id, req.body)
         .then(data => res.json({
-            statusCode: 1,
+            success: true,
             message: 'Thêm sinh viên thành công',
             data: {
                 id: data._id,
