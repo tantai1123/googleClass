@@ -346,7 +346,7 @@ router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { se
     })
 });
 router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    async function removeStudent(idSender, idReceiver, idStaff) {
+    async function removeUser(idSender, idReceiver, idStaff) {
         checkObjectId(idSender, idReceiver);
         const staff = await User.findById(idStaff);
         if (!staff.isStaff) throw new MyError('Không có quyền', 401);
@@ -358,13 +358,13 @@ router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { sessio
         if (!sender) throw new MyError('Không tìm thấy người dùng', 404);
 
         const updateObject = {
-            $pull: { members: idSender, students: idSender }
+            $pull: { members: idSender, students: idSender, teacher: idSender }
         };
         const receiver = await Class.findByIdAndUpdate(idReceiver, updateObject);
         if (!receiver) throw new MyError('Không tìm thấy lớp này', 404);
         return sender;
     }
-    removeStudent(req.params.idUser, req.params.clId, req.user.id)
+    removeUser(req.params.idUser, req.params.clId, req.user.id)
         .then(data => res.json({
             statusCode: 1,
             message: 'Xóa sinh viên thành công',
