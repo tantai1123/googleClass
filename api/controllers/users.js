@@ -13,7 +13,8 @@ const { MyError } = require('../../utils/myError');
 //
 const validateRegisterInput = require('../../validation/register');
 const validateLoginInput = require('../../validation/login');
-const ValidatePasswordInput = require('../../validation/changepass');
+const validateChangePass = require('../../validation/changepass');
+const validateResetPass = require('../../validation/resetpass');
 
 //
 const User = require('../../models/User');
@@ -89,7 +90,7 @@ router.post('/login', async (req, res) => {
         .catch(res.onError);
 });
 router.post('/changepassword', password.authenticate('jwt', { session: false }), async (req, res) => {
-    const { errors, isValid } = ValidatePasswordInput(req.body);
+    const { errors, isValid } = validateChangePass(req.body);
     if (!isValid) {
         return res.status(400).json(errors);
     }
@@ -211,7 +212,7 @@ router.post('/reset/:token', function (req, res) {
                         message: 'Token hết hạn'
                     });
                 } else {
-                    const { errors, isValid } = ValidatePasswordInput(req.body);
+                    const { errors, isValid } = validateResetPass(req.body);
                     if (!isValid) {
                         return res.status(400).json(errors);
                     } else {

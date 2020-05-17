@@ -79,7 +79,7 @@
 
 - **/staff/class/:classId/addstudents**  `<POST>`
 >params: id class
-idUser (array id sinh viên)
+>idUser (array id sinh viên)
 
 - **/staff/class/:classId/members** `<POST>`
 >params: id class
