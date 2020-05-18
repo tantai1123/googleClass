@@ -307,7 +307,6 @@ router.post('/class/:clId/addteacher/:idUser', passport.authenticate('jwt', { se
         if (!sender) throw new MyError('Giảng viên này đã được thêm trước đó', 404);
 
         const classs = await Class.findById(idReceiver);
-        console.log(classs.teacher)
 
         const options = {
             new: true,
@@ -357,13 +356,23 @@ router.post('/class/:clId/remove/:idUser', passport.authenticate('jwt', { sessio
         const sender = await User.findOneAndUpdate(queryObject, { $pull: { classes: idReceiver } });
         if (!sender) throw new MyError('Không tìm thấy người dùng', 404);
 
-        const updateObject = {
-            $pull: { members: idSender, students: idSender},
-            $unset: {teacher: ""}
+        const updateObject1 = {
+            $pull: { members: idSender, students: idSender }
         };
-        const receiver = await Class.findByIdAndUpdate(idReceiver, updateObject);
-        if (!receiver) throw new MyError('Không tìm thấy lớp này', 404);
-        return sender;
+        const updateObject2 = {
+            $pull: { members: idSender, },
+            $unset: { teacher: "" }
+        };
+        const classs = await Class.findById(idReceiver)
+        if (classs.teacher.toString() == idSender) {
+            const receiver = await Class.findByIdAndUpdate(idReceiver, updateObject2);
+            if (!receiver) throw new MyError('Không tìm thấy lớp này', 404);
+            return sender;
+        } else {
+            const receiver = await Class.findByIdAndUpdate(idReceiver, updateObject1);
+            if (!receiver) throw new MyError('Không tìm thấy lớp này', 404);
+            return sender;
+        }
     }
     removeUser(req.params.idUser, req.params.clId, req.user.id)
         .then(data => res.send({
