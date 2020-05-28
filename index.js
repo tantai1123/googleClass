@@ -10,6 +10,7 @@ const classes = require('./api/controllers/classes');
 const comments = require('./api/controllers/comments');
 const admin = require('./api/controllers/admin');
 const staff = require('./api/controllers/staff');
+const messages = require('./api/controllers/messages');
 var cors = require('cors')
 require('./config/seedDb');
 const app = express();
@@ -39,7 +40,25 @@ app.use('/classes', classes);
 app.use('/comments', comments);
 app.use('/admin', admin);
 app.use('/staff', staff);
+app.use('/messages', messages);
 
 const port = process.env.PORT || 1234;
 
-app.listen(port, () => console.log(`Server đang khởi động trên port ${port}`));
+const server = app.listen(port, () => console.log(`Server đang khởi động trên port ${port}`));
+const io = require('socket.io').listen(server);
+io.set('origins', '*:*');
+io.on('connection', socket => {
+    //Realtime khi vào phòng chat
+    socket.on('CLIENT_ROOM', room => {
+        socket.join(room);
+    })
+
+    socket.on('LEAVE_ROOM', (room) => {
+        socket.leave(room);
+    })
+
+    //Xét id nếu giống phòng chat thì gửi lên
+    socket.on('CLIENT_MESSAGE', message => {
+        io.sockets.in(message.idRoom).emit('SERVER_MESSAGE', message);
+    });
+});
