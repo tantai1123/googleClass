@@ -173,7 +173,7 @@ router.get('/user/all', passport.authenticate('jwt', { session: false }), async 
                         gmail: user.gmail,
                         name: user.name,
                         isTeacher: user.isTeacher,
-                        isStudent: user.isStudent,
+                        isStaff: user.isStaff,
                         isAdmin: user.isAdmin,
                         classes: user.classes
                     })
